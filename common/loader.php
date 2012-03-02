@@ -6,6 +6,19 @@ class Loader {
 	private static $classDirs = array();
 
 	public static function loadClass($name) {
+		$basePath = self::searchClass($name);
+		self::$classDirs[$name] = pathinfo($basePath . '.php',PATHINFO_DIRNAME);
+
+		require $basePath . '.php';
+	}
+
+	public static function classExists($name) {
+		$basepath = self::searchClass($name);
+
+		return is_file($basepath . '.php');
+	}
+
+	private static function searchClass($name) {
 		$array = Helper::_toCamelArray($name);
 		$basePath = BASE_PATH;
 		$prefix = '';
@@ -51,8 +64,6 @@ class Loader {
 			$basePath .= '/' . strtolower(basename($basePath));
 		}
 
-		self::$classDirs[$name] = pathinfo($basePath . '.php',PATHINFO_DIRNAME);
-
-		require $basePath . '.php';
+		return $basePath;
 	}
 }
