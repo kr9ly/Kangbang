@@ -47,7 +47,7 @@ spl_autoload_register(function($name) {
 	}
 
 	if (is_dir($basePath)) {
-		$basePath .= '/' . strtolower($val);
+		$basePath .= '/' . strtolower(basename($basePath));
 	}
 
 	require $basePath . '.php';
