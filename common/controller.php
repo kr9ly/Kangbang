@@ -9,10 +9,10 @@ class Controller {
 		if (!$path) {
 			$path = 'index';
 		}
-		$pathArray = explode('/',$path);
+		$pathArray = explode('/',str_replace('_','/',$path));
 		$params = array();
 		while (count($pathArray) > 0) {
-			$name = TextHelper::toCamelCase(implode('', $pathArray)) . 'Controller';
+			$name = TextHelper::toCamelCase(implode('_', $pathArray)) . 'Controller';
 			if (Loader::classExists($name)) {
 				$controller = new $name;
 				$action = '';
@@ -28,7 +28,11 @@ class Controller {
 
 	public static function execByPath($path) {
 		$controller = self::getByPath($path);
-		return call_user_func_array(array($controller,$controller->getAction()),$controller->getParams());
+		if ($controller) {
+			return call_user_func_array(array($controller,$controller->getAction()),$controller->getParams());
+		} else {
+			die('no controller');
+		}
 	}
 
 	private static function initInstance($controller,$action,$params) {
