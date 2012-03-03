@@ -13,8 +13,8 @@ class TemplateView extends View {
 
 	public function display() {
 		$template = file_get_contents(BASE_PATH . $this->path . '.tpl.php');
-		extract($this->params);
 		ob_start();
+		extract($this->params);
 		eval('?>' . $template);
 		echo ob_get_clean();
 	}

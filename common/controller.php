@@ -2,7 +2,7 @@
 class Controller {
 	/* static */
 	public static function getInstance() {
-		return self::initInstance(new static(),array());
+		return self::initInstance(new static(),'',array());
 	}
 
 	public static function getByPath($path) {
