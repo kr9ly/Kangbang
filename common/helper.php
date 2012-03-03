@@ -1,7 +1,5 @@
 <?php
 class Helper {
-	private static $instances = array();
-
 	final private function __construct() {
 
 	}
@@ -25,13 +23,5 @@ class Helper {
 
 	public static function _toSnakeArray($snake) {
 		return explode('_',$snake);
-	}
-
-	public static function __callstatic($method, $argument) {
-		if (!array_key_exists(get_called_class(), self::$instances)) {
-			self::$instances[get_called_class()] = new static();
-		}
-
-		return call_user_func_array(array(self::$instances[get_called_class()],$method), $argument);
 	}
 }

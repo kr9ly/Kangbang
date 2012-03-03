@@ -1,10 +1,10 @@
 <?php
 class TextHelper extends Helper {
-	public function toCamelCase($text) {
+	public static function toCamelCase($text) {
 		return Helper::_toCamelCase($text);
 	}
 
-	public function toSnakeCase($text) {
+	public static function toSnakeCase($text) {
 		return Helper::_toSnakeCase($text);
 	}
 }

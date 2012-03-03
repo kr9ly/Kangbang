@@ -1,9 +1,9 @@
 <?php
 require '../common/common.php';
 
-$controller = Controller::getByPath($_GET['q']);
-if ($controller) {
-	echo 'foo!';
+$view = Controller::execByPath($_GET['q']);
+if ($view) {
+	$view->display();
 } else {
-	echo 'bar!';
+	View::displayView();
 }
