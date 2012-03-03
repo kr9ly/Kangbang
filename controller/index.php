@@ -1,6 +1,7 @@
 <?php
 class IndexController extends Controller {
 	public function exec() {
-		TextView::get()->set(TextHelper::toCamelCase('hello_world!!'));
+		$view = TemplateView::get();
+		$view->setPath($this->getTemplate('index'));
 	}
 }

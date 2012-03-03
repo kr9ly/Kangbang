@@ -59,4 +59,11 @@ class Controller {
 	public function getParams() {
 		return $this->params;
 	}
+
+	public function getTemplate($path) {
+		if (is_file(BASE_PATH . Loader::getClassPath(get_class($this)) . $path . '.tpl.php')) {
+			return Loader::getClassPath(get_class($this)) . $path;
+		}
+		return Loader::getClassPath(get_class($this)) . 'templates/' . $path;
+	}
 }
