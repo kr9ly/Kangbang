@@ -4,14 +4,20 @@ spl_autoload_register('Loader::loadClass');
 
 class Loader {
 	private static $classDirs = array();
+	private static $classFiles = array();
 
 	public static function getClassPath($name) {
 		return self::$classDirs[$name];
 	}
 
+	public static function getClassFile($name) {
+		return self::$classFiles[$name];
+	}
+
 	public static function loadClass($name) {
 		$basePath = self::searchClass($name);
 		self::$classDirs[$name] = preg_replace("/^" . str_replace('/', '\/', BASE_PATH) . "/u","",pathinfo($basePath . '.php',PATHINFO_DIRNAME)) . '/';
+		self::$classFiles[$name] = preg_replace("/^" . str_replace('/', '\/', BASE_PATH) . "/u","",pathinfo($basePath . '.php',PATHINFO_FILENAME));
 
 		require $basePath . '.php';
 	}
