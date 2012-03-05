@@ -7,18 +7,21 @@ class Dao {
 	private $characterSet;
 	private $engine;
 
-	static $jsons = array();
+    static $instances = array();
 
 	public static function get() {
-		$dao = new static();
-		$dao->loadSchema();
+        if (self::$instances[get_class($this)]) {
+            $dao = self::$instances[get_class($this)];
+        } else {
+            $dao = new static();
+            $dao->loadSchema();
+            self::$instances[get_class($this)] = $dao;
+        }
+
 		return $dao;
 	}
 
 	private function loadJson() {
-		if (self::$jsons[get_class($this)]) {
-			return self::$jsons[get_class($this)];
-		}
 		self::$jsons[get_class($this)] = json_decode(file_get_contents(BASE_PATH . Loader::getClassPath(get_class($this)) . Loader::getClassFile(get_class($this)) . '.schema.json'),true);
 		return self::$jsons[get_class($this)];
 	}
