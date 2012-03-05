@@ -7,16 +7,16 @@ class Dao {
 	private $characterSet;
 	private $engine;
 
-    static $instances = array();
+	static $instances = array();
 
 	public static function get() {
-        if (self::$instances[get_class($this)]) {
-            $dao = self::$instances[get_class($this)];
-        } else {
-            $dao = new static();
-            $dao->loadSchema();
-            self::$instances[get_class($this)] = $dao;
-        }
+		if (self::$instances[get_class($this)]) {
+			$dao = self::$instances[get_class($this)];
+		} else {
+			$dao = new static();
+			$dao->loadSchema();
+			self::$instances[get_class($this)] = $dao;
+		}
 
 		return $dao;
 	}
