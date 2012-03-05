@@ -42,7 +42,9 @@ class Dao {
 	}
 
 	public function getColumnNames() {
-		return array_map(function($val){return $this->tableName . '.' . $val;},array_keys($this->columns));
+		return array_map(function($val){
+			return $this->tableName . '.' . $val;
+		},array_keys($this->columns));
 	}
 
 	public function getCreateSQL() {
@@ -54,15 +56,17 @@ class Dao {
 				case 'key':
 					return "`" . $key . "`" . " INT(11) NOT NULL AUTO_INCREMENT";
 				case 'insertDate':
-					return "`" . $key . "`" . " TIMESTAMP NOT NULL DEFAULT 0";
+					return "`" . $key . "`" . " DATETIME NOT NULL";
 				case 'updateDate':
-					return "`" . $key . "`" . " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
+					return "`" . $key . "`" . " DATETIME NOT NULL";
 				default:
 					return "`" . $key . "` " . strtoupper($val['type']) . ($val['size'] ? '(' . $val['size'] . ')' : '') . ($val['notnull'] ? ' NOT NULL' : '') . ($val['default'] ? ' DEFAULT(' . (is_numeric($val['default']) ? $val['default'] : "'" . $val['default'] . "'")  . ')' : '');
 			}
 		},array_keys($this->columns),$this->columns));
 		if ($this->keyName) {
-			$sql .= ", PRIMARY KEY(" . implode(',',array_map(function($val){return "`" . $val . "`";}, $this->keyName)) . ")";
+			$sql .= ", PRIMARY KEY(" . implode(',',array_map(function($val){
+				return "`" . $val . "`";
+			}, $this->keyName)) . ")";
 		}
 		if ($this->indexes) {
 			foreach ($this->indexes as $key => $columns) {
@@ -72,6 +76,44 @@ class Dao {
 		$sql .= ") DEFAULT CHARACTER SET " . ($this->characterSet ? $this->characterSet : 'utf8') . ", TYPE=" . ($this->engine ? $this->engine : 'InnoDB') . " ";
 
 		return $sql;
+	}
+
+	public function selectByKey($key) {
+		return Db::select($this->tableName, $this->columns, implode(' AND ',array_map(function($val){
+			return $val . " = ?";
+		},$this->keyName)), array($key));
+	}
+
+	public function select($where = '1', $whereParams = array()) {
+		return Db::select($this->tableName, $this->columns, $where, $whereParams);
+	}
+
+	public function insert($params) {
+		foreach ($this->columns as $key => $val) {
+			if ($val['type'] == 'insertDate' || $val['type'] == 'updateDate') {
+				$params[$key] = DateHelper::now();
+			}
+		}
+		Db::insert($this->tableName, $params);
+	}
+
+	public function update($params, $where, $whereParams = array()) {
+		foreach ($this->columns as $key => $val) {
+			if ($val['type'] == 'updateDate') {
+				$params[$key] = DateHelper::now();
+			}
+		}
+		Db::update($this->tableName, $params, $where, $whereParams);
+	}
+
+	public function delete($where, $whereParams = array()) {
+		Db::delete($this->tableName, $where, $whereParams);
+	}
+
+	public function deleteByKey($key) {
+		return Db::delete($this->tableName, $this->columns, implode(' AND ',array_map(function($val){
+			return $val . " = ?";
+		},$this->keyName)), array($key));
 	}
 
 	final private function __construct() {
