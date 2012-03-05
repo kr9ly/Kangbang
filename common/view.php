@@ -27,13 +27,14 @@ class View {
 
 	public static function getByPath($path) {
 		if (!$path) $path = 'index';
-		if (is_file(BASE_PATH . 'controller/' . $path . '.tpl.php')) {
-			$view = TemplateView::getLocal();
-			$view->setPath(BASE_PATH . 'controller/' . $path . '.tpl.php');
+		$path = preg_replace('/\/$/u','',$path);
+		if (is_file(BASE_PATH . '/controller/' . $path . '.tpl.php')) {
+			$view = TemplateView::get();
+			$view->setPath('/controller/' . $path);
 			return $view;
-		} else if (is_dir(BASE_PATH . 'controller/' . $path) && is_file(BASE_PATH . 'controller/' . $path . pathinfo(BASE_PATH . 'controller/' . $path . '.tpl.php',PATHINFO_FILENAME) . '.tpl.php')) {
-			$view = TemplateView::getLocal();
-			$view->setPath(BASE_PATH . 'controller/' . $path . pathinfo(BASE_PATH . 'controller/' . $path . '.tpl.php'));
+		} else if (is_file(BASE_PATH . '/controller/' . $path . '/' . pathinfo(BASE_PATH . '/controller/' . $path . '.tpl.php',PATHINFO_FILENAME) . '.php')) {
+			$view = TemplateView::get();
+			$view->setPath('/controller/' . $path . '/' . pathinfo(BASE_PATH . '/controller/' . $path . '.php',PATHINFO_FILENAME));
 			return $view;
 		}
 		return null;

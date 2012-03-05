@@ -30,8 +30,6 @@ class Controller {
 		$controller = self::getByPath($path);
 		if ($controller) {
 			return call_user_func_array(array($controller,$controller->getAction()),$controller->getParams());
-		} else {
-			die('no controller');
 		}
 	}
 

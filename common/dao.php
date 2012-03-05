@@ -22,8 +22,7 @@ class Dao {
 	}
 
 	private function loadJson() {
-		self::$jsons[get_class($this)] = json_decode(file_get_contents(BASE_PATH . Loader::getClassPath(get_class($this)) . Loader::getClassFile(get_class($this)) . '.schema.json'),true);
-		return self::$jsons[get_class($this)];
+		return json_decode(file_get_contents(BASE_PATH . Loader::getClassPath(get_class($this)) . Loader::getClassFile(get_class($this)) . '.schema.json'),true);
 	}
 
 	private function loadSchema() {
