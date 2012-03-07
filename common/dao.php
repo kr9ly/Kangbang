@@ -99,8 +99,8 @@ class Dao {
 			}
 			Db::execute($this->getCreateSQL(true));
 			Db::execute('INSERT INTO `temp_' . $this->tableName . '` SELECT ' . implode(',',$columns) . ' FROM `' . $this->tableName . '`');
-			Db::execute('DROP TABLE ' . $this->tableName);
-			Db::execute('RENAME TABLE `temp_' . $this->tableName . '` TO `' . $this->tableName . '`');
+			Db::execute('RENAME TABLE `' . $this->tableName . '` TO `old_' . $this->tableName . '`, `temp_' . $this->tableName . '` TO `' . $this->tableName . '`');
+            Db::execute('DROP TABLE `old_' . $this->tableName . '`');
 		} else {
 			Db::execute($this->getCreateSQL());
 		}
