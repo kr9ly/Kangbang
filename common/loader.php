@@ -61,7 +61,7 @@ class Loader {
 		} else {
 			$basePath .= '/common';
 		}
-		foreach ($array as $val) {
+		foreach (array_reverse($array) as $val) {
 			if (is_dir($basePath)) {
 				$basePath .= '/';
 			} else {
