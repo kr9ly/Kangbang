@@ -6,3 +6,4 @@ define('DB_SERVER','localhost');
 define('DB_USERNAME','root');
 define('DB_PASSWORD','');
 define('DB_DATABASE','kangbang');
+define('SESSION_TYPE','db');

@@ -1,7 +1,6 @@
 <?php
 
 Library::load('3rdparty/adodb5/adodb.inc');
-Library::load('3rdparty/adodb5/adodb-exceptions.inc');
 
 class Db {
 	private static $dbConn;

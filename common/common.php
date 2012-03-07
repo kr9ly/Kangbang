@@ -8,3 +8,5 @@ require 'helper.php';
 require 'loader.php';
 
 require '../config/site.php';
+
+Library::load('session_' . SESSION_TYPE);
