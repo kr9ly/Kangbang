@@ -1,7 +1,7 @@
 <?php
 class BasicAuthDao extends Dao {
 	public function isValid($userId, $password) {
-		$cnt = $this->joinUserByKey(user_id)->equalToUserName($userId)->equalToPassword($password)->select('COUNT(*) cnt');
+		$cnt = $this->joinUserOnKey(user_id)->equalToUserName($userId)->equalToPassword($password)->select('COUNT(*) cnt');
 		return $cnt[0]['cnt'] > 0;
 	}
 	
