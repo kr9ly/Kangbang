@@ -157,6 +157,9 @@ class Dao {
 			if ($val['type'] == 'insertDate' || $val['type'] == 'updateDate') {
 				$params[$key] = DateHelper::now();
 			}
+			if (method_exists($this, 'get' . TextHelper::toCamelCase($key) . 'Query')) {
+				$params[$key] = call_user_func(array($this, 'get' . TextHelper::toCamelCase($key) . 'Query'),$params[$key]);
+			}
 		}
 		Db::insert($this->tableName, $params);
 	}
@@ -165,6 +168,9 @@ class Dao {
 		foreach ($this->columns as $key => $val) {
 			if ($val['type'] == 'updateDate') {
 				$params[$key] = DateHelper::now();
+			}
+			if (method_exists($this, 'get' . TextHelper::toCamelCase($key) . 'Query')) {
+				$params[$key] = call_user_func(array($this, 'get' . TextHelper::toCamelCase($key) . 'Query'),$params[$key]);
 			}
 		}
 		$where = '';
@@ -252,10 +258,16 @@ class Dao {
 	private function filter($column, $value, $method = '=') {
 		if (in_array($this->columns,TextHelper::toSnakeCase($column))) {
 			$query = $this->tableName . '.' . TextHelper::toSnakeCase($column) . ' ' . $method . ' ?';
+			if (method_exists($this, 'get' . TextHelper::toCamelCase($column) . 'Query')) {
+				$value = call_user_func(array($this, 'get' . TextHelper::toCamelCase($column) . 'Query'),$value);
+			}
 		} else {
 			foreach ($this->queryDaos as $dao) {
 				if (in_array($dao->columns,TextHelper::toSnakeCase($column))) {
 					$query = $dao->tableName . '.' . TextHelper::toSnakeCase($column) . ' ' . $method . ' ?';
+					if (method_exists($dao, 'get' . TextHelper::toCamelCase($column) . 'Query')) {
+						$value = call_user_func(array($dao, 'get' . TextHelper::toCamelCase($column) . 'Query'),$value);
+					}
 					break;
 				}
 			}
