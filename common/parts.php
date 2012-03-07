@@ -3,7 +3,7 @@ class Parts {
 	/* static */
 	public static function display($path) {
 		if (is_file(BASE_PATH . '/parts/' . $path . '.php')) {
-			$clName = TextHelper::toCamelCase(str_replace('/','_',$path)) . 'Parts';
+			$clName = TextHelper::toCamelCase(implode('_',array_reverse(explode('_',str_replace('/','_',$path))))) . 'Parts';
 			call_user_func_array(array(new $clName, 'exec'), func_get_args());
 		}
 		TemplateView::get()->setPath('/parts/' . $path);
