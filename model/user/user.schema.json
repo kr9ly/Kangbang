@@ -1,9 +1,9 @@
 {
 	"columns" : {
-		"userId" : {"type":"key"}
-		,"userName" : {"type":"varchar", "size":255, "notnull":true}
-		,"insertDate" : {"type":"insertDate"}
-		,"updateDate" : {"type":"updateDate"}
+		"user_id" : {"type":"key"}
+		,"user_name" : {"type":"varchar", "size":255, "notnull":true}
+		,"insert_date" : {"type":"insertDate"}
+		,"update_date" : {"type":"updateDate"}
 	}
 	,"keyName" : ["userId"]
 	,"indexes" : {

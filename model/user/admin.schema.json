@@ -1,13 +1,14 @@
 {
 	"columns" : {
-		"user_id" : {"type":"key"}
+		"admin_user_id" : {"type":"key"}
+		,"admin_user_name" : {"type":"varchar", "size":255, "notnull":true}
 		,"password" : {"type":"varchar", "size":255, "notnull":true}
 		,"insert_date" : {"type":"insertDate"}
 		,"update_date" : {"type":"updateDate"}
 	}
-	,"keyName" : ["user_id"]
+	,"keyName" : ["admin_user_id"]
 	,"indexes" : {
-		"index1" : ["password"]
+		"index1" : ["admin_user_name","password"]
 	}
 	,"engine" : "InnoDB"
 	,"characterSet" : "utf8"
