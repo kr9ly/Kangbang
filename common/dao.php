@@ -58,10 +58,8 @@ class Dao {
 		},array_keys($this->columns));
 	}
 
-	public function getCreateSQL() {
-		static::loadSchema();
-
-		$sql = " CREATE TABLE `" . $this->tableName . "` (";
+	private function getCreateSQL($temp = false) {
+		$sql = " CREATE TABLE `" . ($temp ? 'temp_' : '') . $this->tableName . "` (";
 		$sql .= implode(',',array_map(function($key,$val){
 			switch ($val['type']) {
 				case 'key':
@@ -88,6 +86,25 @@ class Dao {
 
 		return $sql;
 	}
+    
+    public function initSchema() {
+        $cnt = Db::select(array('COUNT(*) cnt'),'INFORMATION_SCHEMA.TABLES','TABLE_NAME = ?',array($this->tableName));
+        if ($cnt[0]['cnt'] > 0) {
+            $schemaInfo = Db::select(array('COLUMN_NAME'),'INFORMATION_SCHEMA.COLUMNS','TABLE_NAME = ?',array($this->tableName));
+            $columns = array();
+            foreach ($schemaInfo as $val) {
+                if (in_array($val,$this->columns)) {
+                    $columns[] = $val;
+                }
+            }
+            Db::execute($this->getCreateSQL(true));
+            Db::execute('INSERT INTO `temp_' . $this->tableName . '` SELECT ' . implode(',',$columns) . ' FROM `' . $this->tableName . '`');
+            Db::execute('DROP TABLE ' . $this->tableName);
+            Db::execute('RENAME TABLE `temp_' . $this->tableName . '` TO `' . $this->tableName . '`');
+        } else {
+            Db::execute($this->getCreateSQL());
+        }
+    }
 
 	public function selectByKey($key) {
 		return Db::select($this->tableName, $this->columns, implode(' AND ',array_map(function($val){
