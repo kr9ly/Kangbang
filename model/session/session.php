@@ -6,7 +6,12 @@ class SessionDao extends Dao {
 	}
 
 	public function registerSession($sessionId, $sessionData) {
-		$this->insert(array('session_id' => $sessionId, 'session_data' => $sessionData, 'expire_date' => DateHelper::date('+' . session_cache_expire() . 'minutes')));
+		$cnt = $this->equalToSessionId($sessionId)->select('COUNT(*) cnt');
+		if ($cnt[0]['cnt'] > 0) {
+			$this->update(array('session_data' => $sessionData, 'expire_date' => DateHelper::date('+' . session_cache_expire() . 'minutes')));
+		} else {
+			$this->insert(array('session_id' => $sessionId, 'session_data' => $sessionData, 'expire_date' => DateHelper::date('+' . session_cache_expire() . 'minutes')));
+		}
 	}
 
 	public function destroySession($sessionId) {
