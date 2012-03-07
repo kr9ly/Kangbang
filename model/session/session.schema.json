@@ -1,0 +1,10 @@
+{
+	"columns" : {
+		"session_id" : {"type":"varchar", "size":255, "notnull":true}
+		,"session_data" : {"type":"text", "notnull":true}
+		,"expire_date" : {"type":"datetime", "notnull":true}
+	}
+	,"keyName" : ["session_id"]
+	,"engine" : "InnoDB"
+	,"characterSet" : "utf8"
+}
