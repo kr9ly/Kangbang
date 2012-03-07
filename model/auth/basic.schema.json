@@ -6,6 +6,9 @@
 		,"updateDate" : {"type":"updateDate"}
 	}
 	,"keyName" : ["userId"]
+	,"indexes" : {
+		"index1" : ["password"]
+	}
 	,"engine" : "InnoDB"
 	,"characterSet" : "utf8"
 }

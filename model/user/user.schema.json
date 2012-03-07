@@ -1,11 +1,14 @@
 {
 	"columns" : {
-	    "userId" : {"type":"key"}
-	    ,"userName" : {"type":"varchar", "size":255, "notnull":true}
-	    ,"insertDate" : {"type":"insertDate"}
-	    ,"updateDate" : {"type":"updateDate"}
+		"userId" : {"type":"key"}
+		,"userName" : {"type":"varchar", "size":255, "notnull":true}
+		,"insertDate" : {"type":"insertDate"}
+		,"updateDate" : {"type":"updateDate"}
 	}
 	,"keyName" : ["userId"]
+	,"indexes" : {
+		"index1" : ["userName"]
+	}
 	,"engine" : "InnoDB"
 	,"characterSet" : "utf8"
 }
