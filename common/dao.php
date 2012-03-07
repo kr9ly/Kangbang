@@ -15,7 +15,7 @@ class Dao {
 	private $queryLimit;
 	private $queryOffset;
 
-	static $json = array();
+	static $jsons = array();
 
 	public static function get() {
 		$dao = new static();
