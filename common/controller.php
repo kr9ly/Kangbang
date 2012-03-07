@@ -12,7 +12,7 @@ class Controller {
 		$pathArray = explode('/',str_replace('_','/',$path));
 		$params = array();
 		while (count($pathArray) > 0) {
-			$name = TextHelper::toCamelCase(implode('_', $pathArray)) . 'Controller';
+			$name = TextHelper::toCamelCase(implode('_', array_reverse($pathArray))) . 'Controller';
 			if (Loader::classExists($name)) {
 				$controller = new $name;
 				$action = '';
