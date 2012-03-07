@@ -53,4 +53,8 @@ class Db {
 	public static function delete($table, $where, $whereParams = array()) {
 		self::execute("DELETE FROM " . $table . " WHERE " . $where, array());
 	}
+
+	public static function getInsertId() {
+		return self::$dbConn->Insert_ID();
+	}
 }

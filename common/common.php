@@ -2,6 +2,8 @@
 
 define('BASE_PATH',realpath('../'));
 
+date_default_timezone_set('Asia/Tokyo');
+
 require 'helper.php';
 require 'loader.php';
 

@@ -1,12 +1,12 @@
 <?php
 class Dao {
-	private $tableName;
-	private $columns;
-	private $indexes;
-	private $keyName;
-	private $characterSet;
-	private $engine;
-	
+	public $tableName;
+	public $columns;
+	public $indexes;
+	public $keyName;
+	public $characterSet;
+	public $engine;
+
 	private $queryWheres = array();
 	private $queryWhereParams = array();
 	private $queryTables = array();
@@ -37,7 +37,7 @@ class Dao {
 	private function loadSchema() {
 		$json = $this->loadJson();
 
-		$this->tableName = TextHelper::toSnakeCase(Loader::getClassFile(get_class($this)));
+		$this->tableName = TextHelper::toSnakeCase(preg_replace('/Dao$/','',get_class($this)));
 		$this->columns = $json['columns'];
 		if ($json['keyName']) {
 			$this->keyName = $json['keyName'];
@@ -86,21 +86,23 @@ class Dao {
 
 		return $sql;
 	}
-	
+
 	public function initSchema() {
-		$cnt = Db::select(array('COUNT(*) cnt'),'INFORMATION_SCHEMA.TABLES','TABLE_NAME = ?',array($this->tableName));
+		$cnt = Db::select('INFORMATION_SCHEMA.TABLES',array('COUNT(*) cnt'),'TABLE_NAME = ?',array($this->tableName));
 		if ($cnt[0]['cnt'] > 0) {
-			$schemaInfo = Db::select(array('COLUMN_NAME'),'INFORMATION_SCHEMA.COLUMNS','TABLE_NAME = ?',array($this->tableName));
+			$schemaInfo = Db::select('INFORMATION_SCHEMA.COLUMNS',array('COLUMN_NAME'),'TABLE_NAME = ?',array($this->tableName));
 			$columns = array();
 			foreach ($schemaInfo as $val) {
-				if (in_array($val,$this->columns)) {
-					$columns[] = $val;
+				if (array_key_exists($val['COLUMN_NAME'],$this->columns)) {
+					$columns[] = $val['COLUMN_NAME'];
 				}
 			}
 			Db::execute($this->getCreateSQL(true));
-			Db::execute('INSERT INTO `temp_' . $this->tableName . '` SELECT ' . implode(',',$columns) . ' FROM `' . $this->tableName . '`');
+			if (count($columns) > 0) {
+				Db::execute('INSERT INTO `temp_' . $this->tableName . '` SELECT ' . implode(',',$columns) . ' FROM `' . $this->tableName . '`');
+			}
 			Db::execute('RENAME TABLE `' . $this->tableName . '` TO `old_' . $this->tableName . '`, `temp_' . $this->tableName . '` TO `' . $this->tableName . '`');
-            Db::execute('DROP TABLE `old_' . $this->tableName . '`');
+			Db::execute('DROP TABLE `old_' . $this->tableName . '`');
 		} else {
 			Db::execute($this->getCreateSQL());
 		}
@@ -115,20 +117,25 @@ class Dao {
 	public function select() {
 		$columns = '';
 		if (func_num_args() > 0) {
-			$columnss .= implode(',',array_map(function($column) {
-				if (in_array($this->columns,TextHelper::toSnakeCase($column))) {
-					return $this->tableName . '.' . TextHelper::toSnakeCase($column);
+			$tableName = $this->tableName;
+			$cols = $this->columns;
+			$queryDaos = $this->queryDaos;
+			$columns = array_map(function($column) use ($tableName,$cols,$queryDaos) {
+				if (array_key_exists(TextHelper::toSnakeCase($column),$cols)) {
+					return $tableName . '.' . TextHelper::toSnakeCase($column);
 				} else {
-					foreach ($this->queryDaos as $dao) {
-						if (in_array($dao->columns,$column)) {
-							return $dao->tableName . '.' . TextHelper::toSnakeCase($column);
+					foreach ($queryDaos as $dao) {
+						if (array_key_exists(TextHelper::toSnakeCase($column),$dao->columns)) {
+							return $tableName . '.' . TextHelper::toSnakeCase($column);
 						}
 					}
 				}
-			},func_get_args()));
+				return $column;
+			},func_get_args());
 		} else {
-			$sql .= implode(',',array_map(function($column) {
-				return $this->tableName . '.' . $column;
+			$tableName = $this->tableName;
+			$sql .= implode(',',array_map(function($column) use ($tableName) {
+				return $tableName . '.' . $column;
 			},$this->columns));
 		}
 		$tables = $this->tableName;
@@ -148,7 +155,7 @@ class Dao {
 		if ($this->queryLimit && $this->queryOffset) {
 			$where .= ',' . (int)$this->queryOffset;
 		}
-		
+
 		return Db::select($tables, $columns, $where, $this->queryWhereParams);
 	}
 
@@ -205,7 +212,7 @@ class Dao {
 			return $val . " = ?";
 		},$this->keyName)), array($key));
 	}
-	
+
 	public function __call($name, $arguments) {
 		if (strpos($name, 'equalTo') === 0) {
 			if (preg_match('/^equalTo(.+)$/u',$name,$matches)) {
@@ -254,16 +261,16 @@ class Dao {
 		}
 		return $this;
 	}
-	
+
 	private function filter($column, $value, $method = '=') {
-		if (in_array($this->columns,TextHelper::toSnakeCase($column))) {
+		if (array_key_exists(TextHelper::toSnakeCase($column),$this->columns)) {
 			$query = $this->tableName . '.' . TextHelper::toSnakeCase($column) . ' ' . $method . ' ?';
 			if (method_exists($this, 'get' . TextHelper::toCamelCase($column) . 'Query')) {
 				$value = call_user_func(array($this, 'get' . TextHelper::toCamelCase($column) . 'Query'),$value);
 			}
 		} else {
 			foreach ($this->queryDaos as $dao) {
-				if (in_array($dao->columns,TextHelper::toSnakeCase($column))) {
+				if (array_key_exists(TextHelper::toSnakeCase($column),$dao->columns)) {
 					$query = $dao->tableName . '.' . TextHelper::toSnakeCase($column) . ' ' . $method . ' ?';
 					if (method_exists($dao, 'get' . TextHelper::toCamelCase($column) . 'Query')) {
 						$value = call_user_func(array($dao, 'get' . TextHelper::toCamelCase($column) . 'Query'),$value);
@@ -278,13 +285,13 @@ class Dao {
 		$this->queryWheres[] = $query;
 		$this->queryWhereParams[] = $value;
 	}
-	
+
 	private function join($table, $key, $column, $leftJoin = false) {
-		$dao = new $table . 'Dao';
+		$dao = call_user_func($table. 'Dao::get');
 		$query = ($leftJoin ? 'LEFT ' : '') . 'JOIN ';
 		$query .= $dao->tableName . ' ON (';
 		if ($key == 'Key') {
-			$keyName = $dao->keyName;
+			$keyName = $dao->keyName[0];
 		} else {
 			$keyName = TextHelper::toSnakeCase($key);
 		}
@@ -293,13 +300,13 @@ class Dao {
 		$this->queryTables[] = $query;
 		$this->queryDaos[] = $dao;
 	}
-	
+
 	private function orderBy($column, $desc = false) {
-		if (in_array($this->columns,TextHelper::toSnakeCase($column))) {
+		if (array_key_exists($this->columns,TextHelper::toSnakeCase($column))) {
 			$query = $this->tableName . '.' . TextHelper::toSnakeCase($column) . ($desc ? ' DESC' : '');
 		} else {
 			foreach ($this->queryDaos as $dao) {
-				if (in_array($dao->columns,TextHelper::toSnakeCase($column))) {
+				if (array_key_exists($dao->columns,TextHelper::toSnakeCase($column))) {
 					$query = $dao->tableName . '.' . TextHelper::toSnakeCase($column) . ($desc ? ' DESC' : '');
 					break;
 				}
@@ -310,11 +317,11 @@ class Dao {
 		}
 		$this->queryOrders[] = $query;
 	}
-	
+
 	private function limit($limit) {
 		$this->queryLimit = $limit;
 	}
-	
+
 	private function offset($offset) {
 		$this->queryOffset = $offset;
 	}

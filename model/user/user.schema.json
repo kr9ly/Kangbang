@@ -5,9 +5,9 @@
 		,"insert_date" : {"type":"insertDate"}
 		,"update_date" : {"type":"updateDate"}
 	}
-	,"keyName" : ["userId"]
+	,"keyName" : ["user_id"]
 	,"indexes" : {
-		"index1" : ["userName"]
+		"index1" : ["user_name"]
 	}
 	,"engine" : "InnoDB"
 	,"characterSet" : "utf8"
