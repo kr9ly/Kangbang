@@ -12,6 +12,7 @@ class Dao {
 	private $queryTables = array();
 	private $queryDaos = array();
 	private $queryOrders = array();
+	private $queryGroups = array();
 	private $queryLimit;
 	private $queryOffset;
 
@@ -113,6 +114,20 @@ class Dao {
 			return $val . " = ?";
 		},$this->keyName)), array($key));
 	}
+	
+	public function count() {
+		return (int)$this->getOne('COUNT(*) cnt');
+	}
+	
+	public function getOne($column) {
+		$rec = $this->select($column);
+		return $rec ? array_shift($rec[0]) : null;
+	}
+	
+	public function getRow() {
+		$rec = call_user_func_array(array($this,'select'),func_get_args());
+		return $rec ? $rec[0] : null;
+	}
 
 	public function select() {
 		$columns = '';
@@ -120,23 +135,20 @@ class Dao {
 			$tableName = $this->tableName;
 			$cols = $this->columns;
 			$queryDaos = $this->queryDaos;
-			$columns = array_map(function($column) use ($tableName,$cols,$queryDaos) {
-				if (array_key_exists(TextHelper::toSnakeCase($column),$cols)) {
-					return $tableName . '.' . TextHelper::toSnakeCase($column);
+			$columns = array();
+			foreach (func_get_args() as $val) {
+				$dao = $this->searchColumnDao($val);
+				if ($dao) {
+					$columns[] = $dao->tableName . '.' . TextHelper::toSnakeCase($val);
 				} else {
-					foreach ($queryDaos as $dao) {
-						if (array_key_exists(TextHelper::toSnakeCase($column),$dao->columns)) {
-							return $tableName . '.' . TextHelper::toSnakeCase($column);
-						}
-					}
+					$columns[] = $val;
 				}
-				return $column;
-			},func_get_args());
+			}
 		} else {
 			$tableName = $this->tableName;
-			$sql .= implode(',',array_map(function($column) use ($tableName) {
+			$columns = array_map(function($column) use ($tableName) {
 				return $tableName . '.' . $column;
-			},$this->columns));
+			},$this->columns);
 		}
 		$tables = $this->tableName;
 		if (count($this->queryTables) > 0) {
@@ -144,7 +156,10 @@ class Dao {
 		}
 		$where = '';
 		if (count($this->queryWheres) > 0) {
-			$where .= implode(' AND ',$this->queryWheres);
+			$where .= implode(' ',$this->queryWheres);
+		}
+		if (count($this->queryGroups) > 0) {
+			$where .= ' GROUP BY ' . implode(',',$this->queryGroups);
 		}
 		if (count($this->queryOrders) > 0) {
 			$where .= ' ORDER BY ' . implode(',',$this->queryOrders);
@@ -182,7 +197,7 @@ class Dao {
 		}
 		$where = '';
 		if (count($this->queryWheres) > 0) {
-			$where .= implode(' AND ',$this->queryWheres);
+			$where .= implode(' ',$this->queryWheres);
 		}
 		if ($this->queryLimit) {
 			$where .= ' LIMIT ' . (int)$this->queryLimit;
@@ -196,7 +211,7 @@ class Dao {
 	public function delete() {
 		$where = '';
 		if (count($this->queryWheres) > 0) {
-			$where .= implode(' AND ',$this->queryWheres);
+			$where .= implode(' ',$this->queryWheres);
 		}
 		if ($this->queryLimit) {
 			$where .= ' LIMIT ' . (int)$this->queryLimit;
@@ -214,33 +229,33 @@ class Dao {
 	}
 
 	public function __call($name, $arguments) {
-		if (strpos($name, 'equalTo') === 0) {
-			if (preg_match('/^equalTo(.+)$/u',$name,$matches)) {
-				$this->filter($matches[1],$arguments[0]);
+		if (strpos($name, 'equalTo') === 0 || strpos($name, 'orEqualTo') === 0) {
+			if (preg_match('/^(or)?[eE]qualTo(.+)$/u',$name,$matches)) {
+				$this->filter($matches[2],$arguments[0],'=',$matches[1]);
 			}
-		} else if (strpos($name, 'notEqualTo') === 0) {
-			if (preg_match('/^notEqualTo(.+)$/u',$name,$matches)) {
-				$this->filter($matches[1],$arguments[0],'!=');
+		} else if (strpos($name, 'notEqualTo') === 0 || strpos($name, 'orNotEqualTo') === 0) {
+			if (preg_match('/^(or)?[nN]otEqualTo(.+)$/u',$name,$matches)) {
+				$this->filter($matches[2],$arguments[0],'!=',$matches[1]);
 			}
-		} else if (strpos($name, 'lessThan') === 0) {
-			if (preg_match('/^lessThan(.+)$/u',$name,$matches)) {
-				$this->filter($matches[1],$arguments[0],'>');
+		} else if (strpos($name, 'lessThan') === 0 || strpos($name, 'orLessThan') === 0) {
+			if (preg_match('/^(or)?[lL]essThan(.+)$/u',$name,$matches)) {
+				$this->filter($matches[2],$arguments[0],'>',$matches[1]);
 			}
-		} else if (strpos($name, 'moreThan') === 0) {
-			if (preg_match('/^moreThan(.+)$/u',$name,$matches)) {
-				$this->filter($matches[1],$arguments[0],'<');
+		} else if (strpos($name, 'moreThan') === 0 || strpos($name, 'orMoreThan') === 0) {
+			if (preg_match('/^(or)?[mM]oreThan(.+)$/u',$name,$matches)) {
+				$this->filter($matches[2],$arguments[0],'<',$matches[1]);
 			}
-		} else if (strpos($name, 'likeTo') === 0) {
-			if (preg_match('/^likeTo(.+)$/u',$name,$matches)) {
-				$this->filter($matches[1],$arguments[0],'like');
+		} else if (strpos($name, 'likeTo') === 0 || strpos($name, 'orLikeTo') === 0) {
+			if (preg_match('/^(or)?[lL]ikeTo(.+)$/u',$name,$matches)) {
+				$this->filter($matches[2],$arguments[0],'like',$matches[1]);
 			}
-		} else if (strpos($name, 'lessThanOrEqualTo') === 0) {
-			if (preg_match('/^lessThanOrEqualTo(.+)$/u',$name,$matches)) {
-				$this->filter($matches[1],$arguments[0],'>=');
+		} else if (strpos($name, 'lessThanOrEqualTo') === 0 || strpos($name, 'orLessThanOrEqualTo') === 0) {
+			if (preg_match('/^(or)?[lL]essThanOrEqualTo(.+)$/u',$name,$matches)) {
+				$this->filter($matches[2],$arguments[0],'>=',$matches[1]);
 			}
-		} else if (strpos($name, 'moreThanOrEqualTo') === 0) {
-			if (preg_match('/^moreThanOrEqualTo(.+)$/u',$name,$matches)) {
-				$this->filter($matches[1],$arguments[0],'<=');
+		} else if (strpos($name, 'moreThanOrEqualTo') === 0 || strpos($name, 'orMoreThanOrEqualTo') === 0) {
+			if (preg_match('/^(or)?[mM]oreThanOrEqualTo(.+)$/u',$name,$matches)) {
+				$this->filter($matches[2],$arguments[0],'<=',$matches[1]);
 			}
 		} else if (strpos($name, 'join') === 0) {
 			if (preg_match('/^join(.+)On(.+)$/u',$name,$matches)) {
@@ -254,6 +269,10 @@ class Dao {
 			if (preg_match('/^orderBy(.+)$/u',$name,$matches)) {
 				$this->orderBy($matches[1], $arguments[0]);
 			}
+		} else if (strpos($name, 'groupBy') === 0) {
+			if (preg_match('/^groupBy(.+)$/u',$name,$matches)) {
+				$this->groupBy($matches[1], $arguments[0]);
+			}
 		} else if (strpos($name, 'limit') === 0) {
 			$this->limit($arguments[0]);
 		} else if (strpos($name, 'offset') === 0) {
@@ -261,28 +280,30 @@ class Dao {
 		}
 		return $this;
 	}
-
-	private function filter($column, $value, $method = '=') {
+	
+	private function searchColumnDao($column) {
 		if (array_key_exists(TextHelper::toSnakeCase($column),$this->columns)) {
-			$query = $this->tableName . '.' . TextHelper::toSnakeCase($column) . ' ' . $method . ' ?';
-			if (method_exists($this, 'get' . TextHelper::toCamelCase($column) . 'Query')) {
-				$value = call_user_func(array($this, 'get' . TextHelper::toCamelCase($column) . 'Query'),$value);
-			}
+			return $this;
 		} else {
 			foreach ($this->queryDaos as $dao) {
 				if (array_key_exists(TextHelper::toSnakeCase($column),$dao->columns)) {
-					$query = $dao->tableName . '.' . TextHelper::toSnakeCase($column) . ' ' . $method . ' ?';
-					if (method_exists($dao, 'get' . TextHelper::toCamelCase($column) . 'Query')) {
-						$value = call_user_func(array($dao, 'get' . TextHelper::toCamelCase($column) . 'Query'),$value);
-					}
-					break;
+					return $dao;
 				}
 			}
 		}
-		if (!$query) {
+	}
+
+	private function filter($column, $value, $method = '=', $or = false) {
+		$dao = $this->searchColumnDao($column);
+		if ($dao) {
+			$query = $dao->tableName . '.' . TextHelper::toSnakeCase($column) . ' ' . $method . ' ?';
+			if (method_exists($dao, 'get' . TextHelper::toCamelCase($column) . 'Query')) {
+				$value = call_user_func(array($dao, 'get' . TextHelper::toCamelCase($column) . 'Query'),$value);
+			}
+		} else {
 			die('Column Not Found.');
 		}
-		$this->queryWheres[] = $query;
+		$this->queryWheres[] = (count($this->queryWheres) > 0 ? ($or ? 'OR ' : 'AND ') : '') .$query;
 		$this->queryWhereParams[] = $value;
 	}
 
@@ -302,20 +323,23 @@ class Dao {
 	}
 
 	private function orderBy($column, $desc = false) {
-		if (array_key_exists($this->columns,TextHelper::toSnakeCase($column))) {
-			$query = $this->tableName . '.' . TextHelper::toSnakeCase($column) . ($desc ? ' DESC' : '');
+		$dao = $this->searchColumnDao($column);
+		if ($dao) {
+			$query = $dao->tableName . '.' . TextHelper::toSnakeCase($column) . ($desc ? ' DESC' : '');
 		} else {
-			foreach ($this->queryDaos as $dao) {
-				if (array_key_exists($dao->columns,TextHelper::toSnakeCase($column))) {
-					$query = $dao->tableName . '.' . TextHelper::toSnakeCase($column) . ($desc ? ' DESC' : '');
-					break;
-				}
-			}
-		}
-		if (!$query) {
 			die('Column Not Found.');
 		}
 		$this->queryOrders[] = $query;
+	}
+	
+	private function groupBy($column) {
+		$dao = $this->searchColumnDao($column);
+		if ($dao) {
+			$query = $dao->tableName . '.' . TextHelper::toSnakeCase($column);
+		} else {
+			die('Column Not Found.');
+		}
+		$this->queryGroups[] = $query;
 	}
 
 	private function limit($limit) {
