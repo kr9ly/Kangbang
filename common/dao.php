@@ -36,6 +36,9 @@ class Dao extends Base {
 	}
 
 	private function loadSchema() {
+		if (get_class() == get_class($this)) {
+			return;
+		}
 		$json = $this->loadJson();
 
 		$this->tableName = TextHelper::toSnakeCase(preg_replace('/Dao$/','',get_class($this)));
@@ -114,16 +117,16 @@ class Dao extends Base {
 			return $val . " = ?";
 		},$this->keyName)), array($key));
 	}
-	
+
 	public function count() {
 		return (int)$this->getOne('COUNT(*) cnt');
 	}
-	
+
 	public function getOne($column) {
 		$rec = $this->select($column);
 		return $rec ? array_shift($rec[0]) : null;
 	}
-	
+
 	public function getRow() {
 		$rec = call_user_func_array(array($this,'select'),func_get_args());
 		return $rec ? $rec[0] : null;
@@ -176,7 +179,7 @@ class Dao extends Base {
 
 	public function insert($params) {
 		$errors = $this->validate($params);
-		if (!$errors) {
+		if ($errors) {
 			die(var_dump($errors));
 		}
 		foreach ($this->columns as $key => $val) {
@@ -288,7 +291,7 @@ class Dao extends Base {
 		}
 		return $this;
 	}
-	
+
 	private function searchColumnDao($column) {
 		if (array_key_exists(TextHelper::toSnakeCase($column),$this->columns)) {
 			return $this;
@@ -339,7 +342,7 @@ class Dao extends Base {
 		}
 		$this->queryOrders[] = $query;
 	}
-	
+
 	private function groupBy($column) {
 		$dao = $this->searchColumnDao($column);
 		if ($dao) {
@@ -357,24 +360,24 @@ class Dao extends Base {
 	private function offset($offset) {
 		$this->queryOffset = $offset;
 	}
-	
+
 	public function validate($params) {
 		$errors = array();
 		foreach ($this->columns as $key => $val) {
-			if ($val['notnull'] && !$val['default'] && $val['type'] != 'insertDate' && $val['type'] == 'updateDate' && $val['type'] == 'key' && !$val['autoincrement'] && !array_key_exists($key,$params)) {
-				$errors[] = $key . ' required.';
+			if ($val['notnull'] && !$val['default'] && $val['type'] != 'insertDate' && $val['type'] != 'updateDate' && $val['type'] != 'key' && !$val['autoincrement'] && !array_key_exists($key,$params)) {
+				$errors[] = $this->_('error.column_required',$this->getColumnName($key));
 				continue;
 			}
 			if (array_key_exists($key,$params)) {
 				switch ($val['type']) {
 					case 'int':
 						if (!preg_match('/^-?[0-9]+$/',$params[$key])) {
-							$errors[] = $this->_('error.number_invalid',$key);
+							$errors[] = $this->_('error.number_invalid',$this->getColumnName($key));
 						}
 						continue 2;
 					case 'date':
 						if (!preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/',$params[$key],$matches) || !checkdate($matches[2],$matches[3],$matches[1])) {
-							$errors[] = $this->_('error.date_invalid',$key);
+							$errors[] = $this->_('error.date_invalid',$this->getColumnName($key));
 						}
 						continue 2;
 					case 'datetime':
@@ -383,12 +386,12 @@ class Dao extends Base {
 							 || $matches[4] < 0 || $matches[4] > 23
 							 || $matches[5] < 0 || $matches[5] > 59
 							 || $matches[6] < 0 || $matches[6] > 59) {
-							$errors[] = $this->_('error.datetime_invalid',$key);
+							$errors[] = $this->_('error.datetime_invalid',$this->getColumnName($key));
 						}
 						continue 2;
 				}
 				if ($val['size'] && mb_strlen($params[$key]) > $val['size']) {
-					$errors[] = $this->_('error.length_invalid',$key,$val['size']);
+					$errors[] = $this->_('error.length_invalid',$this->getColumnName($key),$val['size']);
 					continue;
 				}
 				if (method_exists($this,'validate' . TextHelper::toCamelCase($key))) {
@@ -401,6 +404,14 @@ class Dao extends Base {
 			}
 		}
 		return count($errors) > 0 ? $errors : null;
+	}
+
+	public function getColumnName($column) {
+		$dao = $this->searchColumnDao($column);
+		if ($dao) {
+			return $dao->_('columns.' . $column);
+		}
+		return $column;
 	}
 
 	final private function __construct() {
