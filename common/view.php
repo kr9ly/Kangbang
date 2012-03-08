@@ -1,5 +1,5 @@
 <?php
-class View {
+class View extends Base {
 	/* static start */
 	private static $instances = array();
 	private static $activeView;

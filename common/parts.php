@@ -1,5 +1,5 @@
 <?php
-class Parts {
+class Parts extends Base {
 	/* static */
 	public static function display($path) {
 		if (is_file(BASE_PATH . '/parts/' . $path . '.php')) {

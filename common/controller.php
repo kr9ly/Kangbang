@@ -1,5 +1,5 @@
 <?php
-class Controller {
+class Controller extends Base {
 	/* static */
 	public static function getInstance() {
 		return self::initInstance(new static(),'',array());
@@ -59,9 +59,9 @@ class Controller {
 	}
 
 	public function getTemplate($path) {
-		if (is_file(BASE_PATH . Loader::getClassPath(get_class($this)) . $path . '.tpl.php')) {
-			return Loader::getClassPath(get_class($this)) . $path;
+		if (is_file(BASE_PATH . $this->getClassPath() . $path . '.tpl.php')) {
+			return $this->getClassPath() . $path;
 		}
-		return Loader::getClassPath(get_class($this)) . 'templates/' . $path;
+		return $this->getClassPath() . 'templates/' . $path;
 	}
 }

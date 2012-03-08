@@ -1,5 +1,5 @@
 <?php
-class Dao {
+class Dao extends Base {
 	public $tableName;
 	public $columns;
 	public $indexes;
@@ -29,7 +29,7 @@ class Dao {
 		if (self::$jsons[get_class($this)]) {
 			$json = self::$jsons[get_class($this)];
 		} else {
-			$json = json_decode(file_get_contents(BASE_PATH . Loader::getClassPath(get_class($this)) . Loader::getClassFile(get_class($this)) . '.schema.json'),true);
+			$json = json_decode(file_get_contents(BASE_PATH . $this->getClassPath() . $this->getClassFile() . '.schema.json'),true);
 			self::$jsons[get_class($this)] = $json;
 		}
 		return $json;
@@ -335,7 +335,7 @@ class Dao {
 		if ($dao) {
 			$query = $dao->tableName . '.' . TextHelper::toSnakeCase($column) . ($desc ? ' DESC' : '');
 		} else {
-			die('Column Not Found.');
+			die($this->_('error.column_notfound',$column));
 		}
 		$this->queryOrders[] = $query;
 	}
@@ -345,7 +345,7 @@ class Dao {
 		if ($dao) {
 			$query = $dao->tableName . '.' . TextHelper::toSnakeCase($column);
 		} else {
-			die('Column Not Found.');
+			die($this->_('error.column_notfound',$column));
 		}
 		$this->queryGroups[] = $query;
 	}
@@ -369,12 +369,12 @@ class Dao {
 				switch ($val['type']) {
 					case 'int':
 						if (!preg_match('/^-?[0-9]+$/',$params[$key])) {
-							$errors[] = $key . ' is not a valid number.';
+							$errors[] = $this->_('error.number_invalid',$key);
 						}
 						continue 2;
 					case 'date':
 						if (!preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/',$params[$key],$matches) || !checkdate($matches[2],$matches[3],$matches[1])) {
-							$errors[] = $key . ' is not a valid date.';
+							$errors[] = $this->_('error.date_invalid',$key);
 						}
 						continue 2;
 					case 'datetime':
@@ -383,12 +383,12 @@ class Dao {
 							 || $matches[4] < 0 || $matches[4] > 23
 							 || $matches[5] < 0 || $matches[5] > 59
 							 || $matches[6] < 0 || $matches[6] > 59) {
-							$errors[] = $key . ' is not a valid datetime.';
+							$errors[] = $this->_('error.datetime_invalid',$key);
 						}
 						continue 2;
 				}
 				if ($val['size'] && mb_strlen($params[$key]) > $val['size']) {
-					$errors[] = $key . ' length is less than ' . $val['size'] . ' characters.';
+					$errors[] = $this->_('error.length_invalid',$key,$val['size']);
 					continue;
 				}
 				if (method_exists($this,'validate' . TextHelper::toCamelCase($key))) {
