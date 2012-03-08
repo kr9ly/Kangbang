@@ -175,6 +175,10 @@ class Dao {
 	}
 
 	public function insert($params) {
+		$errors = $this->validate($params);
+		if (!$errors) {
+			die(var_dump($errors));
+		}
 		foreach ($this->columns as $key => $val) {
 			if ($val['type'] == 'insertDate' || $val['type'] == 'updateDate') {
 				$params[$key] = DateHelper::now();
@@ -187,6 +191,10 @@ class Dao {
 	}
 
 	public function update($params) {
+		$errors = $this->validate($params);
+		if (!$errors) {
+			die(var_dump($errors));
+		}
 		foreach ($this->columns as $key => $val) {
 			if ($val['type'] == 'updateDate') {
 				$params[$key] = DateHelper::now();
@@ -348,6 +356,51 @@ class Dao {
 
 	private function offset($offset) {
 		$this->queryOffset = $offset;
+	}
+	
+	public function validate($params) {
+		$errors = array();
+		foreach ($this->columns as $key => $val) {
+			if ($val['notnull'] && !$val['default'] && $val['type'] != 'insertDate' && $val['type'] == 'updateDate' && $val['type'] == 'key' && !$val['autoincrement'] && !array_key_exists($key,$params)) {
+				$errors[] = $key . ' required.';
+				continue;
+			}
+			if (array_key_exists($key,$params)) {
+				switch ($val['type']) {
+					case 'int':
+						if (!preg_match('/^-?[0-9]+$/',$params[$key])) {
+							$errors[] = $key . ' is not a valid number.';
+						}
+						continue 2;
+					case 'date':
+						if (!preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/',$params[$key],$matches) || !checkdate($matches[2],$matches[3],$matches[1])) {
+							$errors[] = $key . ' is not a valid date.';
+						}
+						continue 2;
+					case 'datetime':
+						if (!preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$/',$params[$key],$matches)
+							 || !checkdate($matches[2],$matches[3],$matches[1])
+							 || $matches[4] < 0 || $matches[4] > 23
+							 || $matches[5] < 0 || $matches[5] > 59
+							 || $matches[6] < 0 || $matches[6] > 59) {
+							$errors[] = $key . ' is not a valid datetime.';
+						}
+						continue 2;
+				}
+				if ($val['size'] && mb_strlen($params[$key]) > $val['size']) {
+					$errors[] = $key . ' length is less than ' . $val['size'] . ' characters.';
+					continue;
+				}
+				if (method_exists($this,'validate' . TextHelper::toCamelCase($key))) {
+					$error = call_user_func(array($this,'validate' . TextHelper::toCamelCase($key)),$params[$key]);
+					if ($error) {
+						$errors[] = $error;
+						continue;
+					}
+				}
+			}
+		}
+		return count($errors) > 0 ? $errors : null;
 	}
 
 	final private function __construct() {
