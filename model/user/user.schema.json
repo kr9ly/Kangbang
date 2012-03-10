@@ -1,7 +1,7 @@
 {
 	"columns" : {
 		"user_id" : {"type":"key"}
-		,"user_name" : {"type":"varchar", "size":255, "notnull":true}
+		,"user_name" : {"type":"varchar", "size":255, "required":true}
 		,"insert_date" : {"type":"insertDate"}
 		,"update_date" : {"type":"updateDate"}
 	}

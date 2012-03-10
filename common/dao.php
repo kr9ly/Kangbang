@@ -69,11 +69,11 @@ class Dao extends Base {
 				case 'key':
 					return "`" . $key . "`" . " INT(11) NOT NULL AUTO_INCREMENT";
 				case 'insertDate':
-					return "`" . $key . "`" . " DATETIME NOT NULL";
+					return "`" . $key . "`" . " DATETIME";
 				case 'updateDate':
-					return "`" . $key . "`" . " DATETIME NOT NULL";
+					return "`" . $key . "`" . " DATETIME";
 				default:
-					return "`" . $key . "` " . strtoupper($val['type']) . ($val['size'] ? '(' . $val['size'] . ')' : '') . ($val['notnull'] ? ' NOT NULL' : '') . ($val['default'] ? ' DEFAULT(' . (is_numeric($val['default']) ? $val['default'] : "'" . $val['default'] . "'")  . ')' : '');
+					return "`" . $key . "` " . strtoupper($val['type']) . ($val['size'] ? '(' . $val['size'] . ')' : '') . ($val['default'] ? ' DEFAULT(' . (is_numeric($val['default']) ? $val['default'] : "'" . $val['default'] . "'")  . ')' : '');
 			}
 		},array_keys($this->columns),$this->columns));
 		if ($this->keyName) {
@@ -92,7 +92,7 @@ class Dao extends Base {
 	}
 
 	public function initSchema() {
-		$cnt = Db::select('INFORMATION_SCHEMA.TABLES',array('COUNT(*) cnt'),'TABLE_NAME = ?',array($this->tableName));
+		$cnt = Db::select('INFORMATION_SCHEMA.TABLES',array('COUNT(*) cnt'),'TABLE_NAME = ? AND TABLE_SCHEMA = ?',array($this->tableName,DB_DATABASE));
 		if ($cnt[0]['cnt'] > 0) {
 			$schemaInfo = Db::select('INFORMATION_SCHEMA.COLUMNS',array('COLUMN_NAME'),'TABLE_NAME = ?',array($this->tableName));
 			$columns = array();
@@ -364,20 +364,20 @@ class Dao extends Base {
 	public function validate($params) {
 		$errors = array();
 		foreach ($this->columns as $key => $val) {
-			if ($val['notnull'] && !$val['default'] && $val['type'] != 'insertDate' && $val['type'] != 'updateDate' && $val['type'] != 'key' && !$val['autoincrement'] && !array_key_exists($key,$params)) {
-				$errors[] = $this->_('error.column_required',$this->getColumnName($key));
+			if ($val['required'] && !$val['default'] && $val['type'] != 'insertDate' && $val['type'] != 'updateDate' && $val['type'] != 'key' && !$val['autoincrement'] && !array_key_exists($key,$params)) {
+				$errors[$key] = $this->_('error.column_required',$this->getColumnName($key));
 				continue;
 			}
 			if (array_key_exists($key,$params)) {
 				switch ($val['type']) {
 					case 'int':
 						if (!preg_match('/^-?[0-9]+$/',$params[$key])) {
-							$errors[] = $this->_('error.number_invalid',$this->getColumnName($key));
+							$errors[$key] = $this->_('error.number_invalid',$this->getColumnName($key));
 						}
 						continue 2;
 					case 'date':
 						if (!preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/',$params[$key],$matches) || !checkdate($matches[2],$matches[3],$matches[1])) {
-							$errors[] = $this->_('error.date_invalid',$this->getColumnName($key));
+							$errors[$key] = $this->_('error.date_invalid',$this->getColumnName($key));
 						}
 						continue 2;
 					case 'datetime':
@@ -386,18 +386,26 @@ class Dao extends Base {
 							 || $matches[4] < 0 || $matches[4] > 23
 							 || $matches[5] < 0 || $matches[5] > 59
 							 || $matches[6] < 0 || $matches[6] > 59) {
-							$errors[] = $this->_('error.datetime_invalid',$this->getColumnName($key));
+							$errors[$key] = $this->_('error.datetime_invalid',$this->getColumnName($key));
 						}
 						continue 2;
 				}
 				if ($val['size'] && mb_strlen($params[$key]) > $val['size']) {
-					$errors[] = $this->_('error.length_invalid',$this->getColumnName($key),$val['size']);
+					$errors[$key] = $this->_('error.length_invalid',$this->getColumnName($key),$val['size']);
 					continue;
+				}
+				if ($val['unique']) {
+					$dao = self::get();
+					call_user_func(array($dao,'equalTo' . TextHelper::toCamelCase($key)),$params[$key]);
+					if ($dao->count()) {
+						$errors[$key] = $this->_('error.not_unique',$this->getColumnName($key));
+						continue;
+					}
 				}
 				if (method_exists($this,'validate' . TextHelper::toCamelCase($key))) {
 					$error = call_user_func(array($this,'validate' . TextHelper::toCamelCase($key)),$params[$key]);
 					if ($error) {
-						$errors[] = $error;
+						$errors[$key] = $error;
 						continue;
 					}
 				}

@@ -1,8 +1,8 @@
 {
 	"columns" : {
-		"session_id" : {"type":"varchar", "size":255, "notnull":true}
-		,"session_data" : {"type":"text", "notnull":true}
-		,"expire_date" : {"type":"datetime", "notnull":true}
+		"session_id" : {"type":"varchar", "size":255, "required":true}
+		,"session_data" : {"type":"text", "required":true}
+		,"expire_date" : {"type":"datetime", "required":true}
 	}
 	,"keyName" : ["session_id"]
 	,"engine" : "InnoDB"

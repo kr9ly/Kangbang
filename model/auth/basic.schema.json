@@ -1,7 +1,8 @@
 {
 	"columns" : {
 		"user_id" : {"type":"key"}
-		,"password" : {"type":"varchar", "size":255, "notnull":true}
+		,"login_id" : {"type":"varchar", "size":255, "required":true, "unique":true}
+		,"password" : {"type":"varchar", "size":255, "required":true}
 		,"insert_date" : {"type":"insertDate"}
 		,"update_date" : {"type":"updateDate"}
 	}

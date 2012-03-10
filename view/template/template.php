@@ -17,36 +17,19 @@ class TemplateView extends View {
 		eval('?>' . $template);
 		echo ob_get_clean();
 	}
-	
-	public function __get($key) {
-		if (strpos($key,'_')) {
-			return $this->params[$key];
-		}
-		return htmlspecialchars($this->params[$key]);
-	}
-	
-	private function get($key) {
-		return htmlspecialchars($_GET[$key]);
-	}
-	
-	private function post($key) {
-		return htmlspecialchars($_POST[$key]);
-	}
-	
-	private function request($key) {
-		return htmlspecialchars($_REQUEST[$key]);
-	}
-	
-	private function _get($key) {
-		return $_GET[$key];
-	}
-	
-	private function _post($key) {
-		return $_POST[$key];
-	}
-	
-	private function request($key) {
-		return $_REQUEST[$key];
-	}
 
+	public function __get($key) {
+		$escape = true;
+		if (strpos($key,'_') === 0) {
+			$escape = false;
+			$key = substr($key,1);
+		}
+		if (array_key_exists($key,$this->params)) {
+			return $escape ? htmlspecialchars($this->params[$key]) : $this->params[$key];
+		}
+		if (array_key_exists($key,$_REQUEST)) {
+			return $escape ? htmlspecialchars($_REQUEST[$key]) : $_REQUEST[$key];
+		}
+		return '';
+	}
 }
