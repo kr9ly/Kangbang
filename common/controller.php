@@ -64,4 +64,12 @@ class Controller extends Base {
 		}
 		return $this->getClassPath() . 'templates/' . $path;
 	}
+
+	protected function isGet() {
+		return $_SERVER['REQUEST_METHOD'] == 'GET';
+	}
+
+	protected function isPost() {
+		return $_SERVER['REQUEST_METHOD'] == 'POST';
+	}
 }

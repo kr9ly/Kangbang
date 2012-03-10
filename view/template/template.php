@@ -14,7 +14,13 @@ class TemplateView extends View {
 	}
 
 	public function display() {
-		$template = str_replace("\t","",file_get_contents(BASE_PATH . $this->path . '.tpl.php'));
+		if (is_file(BASE_PATH . $this->path . '.tpl.php')) {
+			$template = str_replace("\t","",file_get_contents(BASE_PATH . $this->path . '.tpl.php'));
+		} else if (is_file(BASE_PATH . $this->path . '/' . pathinfo($this->path,PATHINFO_FILENAME) . '.tpl.php')) {
+			$template = str_replace("\t","",file_get_contents(BASE_PATH . $this->path . '/' . pathinfo($this->path,PATHINFO_FILENAME) . '.tpl.php'));
+		} else {
+			die('not found template:' . $this->path);
+		}
 		ob_start();
 		eval('?>' . $template);
 		ob_end_flush();
@@ -28,9 +34,6 @@ class TemplateView extends View {
 		}
 		if (array_key_exists($key,$this->params)) {
 			return $escape ? htmlspecialchars($this->params[$key]) : $this->params[$key];
-		}
-		if (array_key_exists($key,$_REQUEST)) {
-			return $escape ? htmlspecialchars($_REQUEST[$key]) : $_REQUEST[$key];
 		}
 		return '';
 	}

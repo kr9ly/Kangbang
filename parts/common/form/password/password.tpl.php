@@ -1,0 +1,1 @@
+<input type="password" name="<?=$this->name ?>" id="<?=$this->name ?>" class="input-xlarge"  placeholder="<?=$this->placeholder ?>" value="<?= $_REQUEST[$this->_name] ? $_REQUEST[$this->_name] : $this->value ?>" />
