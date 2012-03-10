@@ -9,6 +9,6 @@ class IndexController extends Controller {
 		//$userId = UserDao::get()->newUser('test', 'password');
 		//BasicAuthDao::get()->registerPassword($userId, 'password');
 		//Db::commit();
-		var_dump(BasicAuthDao::get()->validate(array()));
+		var_dump(BasicAuthDao::get()->validate(array('password' => 'abcefg12')));
 	}
 }

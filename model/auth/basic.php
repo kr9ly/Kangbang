@@ -12,4 +12,11 @@ class BasicAuthDao extends Dao {
 	public function getPasswordQuery($val) {
 		return sha1($val);
 	}
+
+	public function validatePassword($val) {
+		if (!preg_match('/[!-~]{6,}/', $val)) {
+			return $this->_('error.password_format');
+		}
+		return;
+	}
 }

@@ -5,11 +5,11 @@ class View extends Base {
 	private static $activeView;
 
 	public static function get() {
-		if (!array_key_exists(get_called_class(), self::$instances)) {
-			self::$instances[get_called_class()] = new static();
+		if (self::$activeView) {
+			return self::$activeView;
 		}
-		self::$activeView = self::$instances[get_called_class()];
-		return self::$instances[get_called_class()];
+		self::$activeView = new static();
+		return self::$activeView;
 	}
 
 	public static function getLocal() {
@@ -19,7 +19,9 @@ class View extends Base {
 
 	public static function displayView() {
 		if (self::$activeView) {
-			self::$activeView->display();
+			$view = self::$activeView;
+			self::$activeView = null;
+			$view->display();
 			return true;
 		}
 		return false;
