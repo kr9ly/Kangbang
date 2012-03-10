@@ -1,4 +1,4 @@
-<? Parts::display('admin/header'); ?>
+<? Parts::display('admin/login_header'); ?>
 <form class="form-horizontal" method="POST">
 	<fieldset>
 		<legend>
@@ -16,11 +16,11 @@
 			<label class="control-label" for="password"><?= $this->_('page.password') ?>
 			</label>
 			<div class="controls">
-				<? Parts::display('common/form/text','password','',$this->_('page.password')) ?>
+				<? Parts::display('common/form/password','password','',$this->_('page.password')) ?>
 			</div>
 		</div>
 		<div class="form-actions">
-			<button type="submit" class="btn btn-primary"><?= $this->_('page.button.login') ?></button>
+			<? Parts::display('common/form/submit','login',$this->_('page.button.login')) ?>
 		</div>
 	</fieldset>
 </form>

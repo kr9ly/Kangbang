@@ -5,7 +5,7 @@ class LoginAdminController extends Controller {
 			NavigateHelper::redirect('admin');
 		}
 		if ($this->isPost()) {
-			$res = AdminUserHelper::login($_POST['user_id'], $_POST['password']);
+			$res = AdminUserHelper::login($_POST['login_id'], $_POST['password']);
 			if ($res) {
 				NavigateHelper::redirect('admin');
 			}

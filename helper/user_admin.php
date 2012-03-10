@@ -15,4 +15,8 @@ class AdminUserHelper extends Helper {
 		}
 		return false;
 	}
+
+	public static function logout() {
+		unset($_SESSION['admin_user']);
+	}
 }

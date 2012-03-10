@@ -1,0 +1,1 @@
+<button type="submit" name="<?= $this->name ?>" class="btn<?= $this->_primary ? ' btn-primary' : ''?>"><?= $this->value ?></button>

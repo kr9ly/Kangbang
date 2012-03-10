@@ -10,7 +10,7 @@ class BasicAuthDao extends Dao {
 	}
 
 	public function getPasswordQuery($val) {
-		return sha1($val);
+		return hash('sha256',SITE_SALT . $val);
 	}
 
 	public function validatePassword($val) {

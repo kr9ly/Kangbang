@@ -109,6 +109,7 @@ class Dao extends Base {
 			Db::execute('DROP TABLE `old_' . $this->tableName . '`');
 		} else {
 			Db::execute($this->getCreateSQL());
+			$this->insertDefaultRecords();
 		}
 	}
 
@@ -173,7 +174,6 @@ class Dao extends Base {
 		if ($this->queryLimit && $this->queryOffset) {
 			$where .= ',' . (int)$this->queryOffset;
 		}
-
 		return Db::select($tables, $columns, $where, $this->queryWhereParams);
 	}
 
@@ -420,6 +420,10 @@ class Dao extends Base {
 			return $dao->_('columns.' . $column);
 		}
 		return $column;
+	}
+
+	public function insertDefaultRecords() {
+
 	}
 
 	final private function __construct() {

@@ -11,3 +11,5 @@ define('DEFAULT_LANG','ja_JP');
 
 define('BASE_URL', 'http://development/');
 define('BASE_SSL_URL', 'http://development/');
+
+define('SITE_SALT','defaultsalt');
