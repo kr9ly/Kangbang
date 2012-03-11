@@ -165,6 +165,8 @@ class Dao extends Base {
 		$where = '';
 		if (count($this->queryWheres) > 0) {
 			$where .= implode(' ',$this->queryWheres);
+		} else {
+			$where .= '1';
 		}
 		if (count($this->queryGroups) > 0) {
 			$where .= ' GROUP BY ' . implode(',',$this->queryGroups);

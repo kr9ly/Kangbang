@@ -33,7 +33,7 @@ class TemplateView extends View {
 			$key = substr($key,1);
 		}
 		if (array_key_exists($key,$this->params)) {
-			if (is_array($this->params[$key])) {
+			if (is_array($this->params[$key]) || is_object($this->params[$key])) {
 				return $this->params[$key];
 			}
 			return $escape ? htmlspecialchars($this->params[$key]) : $this->params[$key];
@@ -41,11 +41,11 @@ class TemplateView extends View {
 		return '';
 	}
 
-	private function http($url) {
+	private function http($url = false) {
 		return UrlHelper::http($url);
 	}
 
-	private function https($url) {
+	private function https($url = false) {
 		return UrlHelper::https($url);
 	}
 
