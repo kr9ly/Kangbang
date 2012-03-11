@@ -33,6 +33,9 @@ class TemplateView extends View {
 			$key = substr($key,1);
 		}
 		if (array_key_exists($key,$this->params)) {
+			if (is_array($this->params[$key])) {
+				return $this->params[$key];
+			}
 			return $escape ? htmlspecialchars($this->params[$key]) : $this->params[$key];
 		}
 		return '';
@@ -56,12 +59,7 @@ class TemplateView extends View {
 		}
 		$args = $arr;
 		if (!$this->lang) {
-			if (!self::$pathLangs[$this->path]) {
-				if (is_file(BASE_PATH . $this->path . '.' . DEFAULT_LANG . '.ini')) {
-					self::$pathLangs[$this->path] = parse_ini_file(BASE_PATH . $this->path . '.' . DEFAULT_LANG . '.ini');
-				}
-			}
-			$this->lang = self::$pathLangs[$this->path];
+			$this->lang = Lang::loadLang(pathinfo($this->path,PATHINFO_DIRNAME) . '/', pathinfo($this->path,PATHINFO_FILENAME));
 		}
 		if ($this->lang[$key]) {
 			array_unshift($args, $this->lang[$key]);

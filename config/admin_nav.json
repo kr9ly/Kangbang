@@ -1,0 +1,13 @@
+{
+	"left" : {
+		"menu.user_admin" : {
+			"menu.user_list" : "admin/user"
+		}
+		,"menu.site_admin" : {
+		    "menu.site_page" : "admin/page"
+		}
+	}
+	,"right" : {
+	    "menu.logout" : "admin/logout"
+	}
+}
