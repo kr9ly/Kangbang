@@ -1,3 +1,4 @@
 <? Parts::display('admin/header'); ?>
-Hello World!
+<h2><?= $this->_('page.environment') ?></h2>
+<? Parts::display('common/table/vertical',$this->_environments) ?>
 <? Parts::display('admin/footer'); ?>
