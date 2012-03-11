@@ -16,6 +16,8 @@
 							</ul>
 							<? } ?>
 						</li>
+						<? } else { ?>
+						<li><a href="<?= $this->https($val) ?>"><?= $key ?></a></li>
 						<? } ?>
 					<? } ?>
 				</ul>
@@ -32,6 +34,8 @@
 							</ul>
 							<? } ?>
 						</li>
+						<? } else { ?>
+						<li><a href="<?= $this->https($val) ?>"><?= $key ?></a></li>
 						<? } ?>
 					<? } ?>
 				</ul>
