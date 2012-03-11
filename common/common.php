@@ -2,11 +2,11 @@
 
 define('BASE_PATH',realpath('../'));
 
-date_default_timezone_set('Asia/Tokyo');
-
 require 'helper.php';
 require 'loader.php';
 
 require '../config/site.php';
 
+date_default_timezone_set(DEFAULT_TIMEZONE);
 Library::load('session_' . SESSION_TYPE);
+Library::load('cache_' . CACHE_TYPE);

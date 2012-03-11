@@ -1,9 +1,14 @@
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="container">
+			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</a>
+			<a class="brand" href="<?= $this->https('admin') ?>"><?= $this->_('site.name') ?></a>
 			<div class="nav-collapse">
 				<ul class="nav pull-left">
-					<li><a class="brand" href="<?= $this->https('admin') ?>"><?= $this->_('site.name') ?></a></li>
 					<? foreach (Config::get('admin_nav')->left as $key => $val) { ?>
 						<? if (is_object($val)) { ?>
 						<li class="dropdown">
