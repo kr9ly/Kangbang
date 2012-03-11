@@ -5,6 +5,11 @@
 		}
 		,"menu.site_admin" : {
 		    "menu.site_page" : "admin/page"
+		    ,"menu.site_parts" : "admin/parts"
+		}
+		,"menu.system_admin" : {
+		    "menu.cache_clear" : "admin/cache_clear"
+		    ,"menu.db_update" : "admin/db_update"
 		}
 	}
 	,"right" : {

@@ -8,7 +8,7 @@
 	}
 	,"keyName" : ["user_id"]
 	,"indexes" : {
-		"index1" : ["password"]
+		"index1" : ["login_id", "password"]
 	}
 	,"engine" : "InnoDB"
 	,"characterSet" : "utf8"

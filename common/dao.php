@@ -94,22 +94,26 @@ class Dao extends Base {
 	public function initSchema() {
 		$cnt = Db::select('INFORMATION_SCHEMA.TABLES',array('COUNT(*) cnt'),'TABLE_NAME = ? AND TABLE_SCHEMA = ?',array($this->tableName,DB_DATABASE));
 		if ($cnt[0]['cnt'] > 0) {
-			$schemaInfo = Db::select('INFORMATION_SCHEMA.COLUMNS',array('COLUMN_NAME'),'TABLE_NAME = ?',array($this->tableName));
-			$columns = array();
-			foreach ($schemaInfo as $val) {
-				if (array_key_exists($val['COLUMN_NAME'],$this->columns)) {
-					$columns[] = $val['COLUMN_NAME'];
+			if (!TableVersionsDao::get()->isVersionEquals($this->tableName,array($this->columns,$this->indexes))) {
+				$schemaInfo = Db::select('INFORMATION_SCHEMA.COLUMNS',array('COLUMN_NAME'),'TABLE_NAME = ?',array($this->tableName));
+				$columns = array();
+				foreach ($schemaInfo as $val) {
+					if (array_key_exists($val['COLUMN_NAME'],$this->columns)) {
+						$columns[] = $val['COLUMN_NAME'];
+					}
 				}
+				Db::execute($this->getCreateSQL(true));
+				if (count($columns) > 0) {
+					Db::execute('INSERT INTO `temp_' . $this->tableName . '`(' . implode(',',$columns) . ') SELECT ' . implode(',',$columns) . ' FROM `' . $this->tableName . '`');
+				}
+				Db::execute('RENAME TABLE `' . $this->tableName . '` TO `old_' . $this->tableName . '`, `temp_' . $this->tableName . '` TO `' . $this->tableName . '`');
+				Db::execute('DROP TABLE `old_' . $this->tableName . '`');
+				TableVersionsDao::get()->updateVersion($this->tableName,array($this->columns,$this->indexes));
 			}
-			Db::execute($this->getCreateSQL(true));
-			if (count($columns) > 0) {
-				Db::execute('INSERT INTO `temp_' . $this->tableName . '` SELECT ' . implode(',',$columns) . ' FROM `' . $this->tableName . '`');
-			}
-			Db::execute('RENAME TABLE `' . $this->tableName . '` TO `old_' . $this->tableName . '`, `temp_' . $this->tableName . '` TO `' . $this->tableName . '`');
-			Db::execute('DROP TABLE `old_' . $this->tableName . '`');
 		} else {
 			Db::execute($this->getCreateSQL());
 			$this->insertDefaultRecords();
+			TableVersionsDao::get()->updateVersion($this->tableName,array($this->columns,$this->indexes));
 		}
 	}
 
@@ -125,7 +129,7 @@ class Dao extends Base {
 
 	public function getOne($column) {
 		$rec = $this->select($column);
-		return $rec ? array_shift($rec[0]) : null;
+		return $rec ? $rec[0][0] : null;
 	}
 
 	public function getRow() {
@@ -364,6 +368,9 @@ class Dao extends Base {
 	public function validate($params) {
 		$errors = array();
 		foreach ($this->columns as $key => $val) {
+			if (method_exists($this, 'get' . TextHelper::toCamelCase($key) . 'Query')) {
+				$params[$key] = call_user_func(array($this, 'get' . TextHelper::toCamelCase($key) . 'Query'),$params[$key]);
+			}
 			if ($val['required'] && !$val['default'] && $val['type'] != 'insertDate' && $val['type'] != 'updateDate' && $val['type'] != 'key' && !$val['autoincrement'] && !array_key_exists($key,$params)) {
 				$errors[$key] = $this->_('error.column_required',$this->getColumnName($key));
 				continue;

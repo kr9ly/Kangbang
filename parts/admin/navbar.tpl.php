@@ -15,11 +15,11 @@
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 								<?= $key ?> <b class="caret"></b>
 							</a>
-							<? foreach ($val as $key2 => $val2) { ?>
 							<ul class="dropdown-menu">
+							<? foreach ($val as $key2 => $val2) { ?>
 								<li><a href="<?= $this->https($val2) ?>"><?= $key2 ?></a></li>
-							</ul>
 							<? } ?>
+							</ul>
 						</li>
 						<? } else { ?>
 						<li><a href="<?= $this->https($val) ?>"><?= $key ?></a></li>
@@ -33,11 +33,11 @@
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 								<?= $key ?> <b class="caret"></b>
 							</a>
-							<? foreach ($val as $key2 => $val2) { ?>
 							<ul class="dropdown-menu">
+							<? foreach ($val as $key2 => $val2) { ?>
 								<li><a href="<?= $this->https($val2) ?>"><?= $key2 ?></a></li>
-							</ul>
 							<? } ?>
+							</ul>
 						</li>
 						<? } else { ?>
 						<li><a href="<?= $this->https($val) ?>"><?= $key ?></a></li>

@@ -4,7 +4,7 @@
 		<legend>
 			<?= $this->_('page.login_message','site.name') ?>
 		</legend>
-		<? if ($this->error) Parts::display('common/alert/error',$this->error) ?>
+		<? Parts::display('common/alert/error',$this->error) ?>
 		<div class="control-group">
 			<label class="control-label" for="login_id"><?= $this->_('page.login_id') ?>
 			</label>

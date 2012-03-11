@@ -1,0 +1,11 @@
+{
+	"columns" : {
+		"table_name" : {"type":"varchar", "size":255, "required":true}
+		,"version" : {"type":"varchar", "size":255, "required":true}
+		,"insert_date" : {"type":"insertDate"}
+		,"update_date" : {"type":"updateDate"}
+	}
+	,"keyName" : ["table_name"]
+	,"engine" : "InnoDB"
+	,"characterSet" : "utf8"
+}
