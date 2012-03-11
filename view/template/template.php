@@ -14,10 +14,14 @@ class TemplateView extends View {
 	}
 
 	public function display() {
-		if (is_file(BASE_PATH . $this->path . '.tpl.php')) {
+		if (Cache::isExists('template/' . $this->path)) {
+			$template = Cache::get('template/' . $this->path);
+		} else if (is_file(BASE_PATH . $this->path . '.tpl.php')) {
 			$template = str_replace("\t","",file_get_contents(BASE_PATH . $this->path . '.tpl.php'));
+			Cache::set('template/' . $this->path, $template);
 		} else if (is_file(BASE_PATH . $this->path . '/' . pathinfo($this->path,PATHINFO_FILENAME) . '.tpl.php')) {
 			$template = str_replace("\t","",file_get_contents(BASE_PATH . $this->path . '/' . pathinfo($this->path,PATHINFO_FILENAME) . '.tpl.php'));
+			Cache::set('template/' . $this->path, $template);
 		} else {
 			die('not found template:' . $this->path);
 		}

@@ -1,7 +1,7 @@
 <?php
 class Cache {
 	public static function isExists($key) {
-		return apc_exists($key);
+		return apc_fetch($key) !== false;
 	}
 
 	public static function get($key) {

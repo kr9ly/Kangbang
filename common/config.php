@@ -3,18 +3,19 @@ class Config implements Iterator {
 	static $confs = array();
 
 	public static function get($path) {
-		if (self::$confs[$path]) {
-			return self::$confs[$path];
+		if (Cache::isExists('config/' . $path)) {
+			return Cache::get('config/' .$path);
 		}
 		if (is_file(BASE_PATH . '/config/' . $path . '.json')) {
-			self::$confs[$path] = new Config();
-			self::$confs[$path]->conf = json_decode(file_get_contents(BASE_PATH . '/config/' . $path . '.json'),true);
+			$config = new Config();
+			$config->conf = json_decode(file_get_contents(BASE_PATH . '/config/' . $path . '.json'),true);
 		} else {
-			self::$confs[$path] = new Config();
-			self::$confs[$path]->conf = array();
+			$config = new Config();
+			$config->conf = array();
 		}
-		self::$confs[$path]->path = $path;
-		return self::$confs[$path];
+		$config->path = $path;
+		Cache::set('config/' . $path, $config);
+		return $config;
 	}
 
 	private $path;

@@ -26,11 +26,11 @@ class Dao extends Base {
 	}
 
 	private function loadJson() {
-		if (self::$jsons[get_class($this)]) {
-			$json = self::$jsons[get_class($this)];
+		if (Cache::isExists('dao/' . get_class($this))) {
+			$json = Cache::get('dao/' . get_class($this));
 		} else {
 			$json = json_decode(file_get_contents(BASE_PATH . $this->getClassPath() . $this->getClassFile() . '.schema.json'),true);
-			self::$jsons[get_class($this)] = $json;
+			Cache::set('dao/' . get_class($this), $json);
 		}
 		return $json;
 	}
