@@ -29,6 +29,9 @@ class Loader {
 	}
 
 	private static function searchClass($name) {
+		if (class_exists('Cache',false) && Cache::isExists('class/' . $name)) {
+			return Cache::get('class/' . $name);
+		}
 		$array = Helper::_toCamelArray($name);
 		$basePath = BASE_PATH;
 		$prefix = '';
@@ -61,19 +64,22 @@ class Loader {
 		} else {
 			$basePath .= '/common';
 		}
+		$temp = array();
 		foreach (array_reverse($array) as $val) {
-			if (is_dir($basePath)) {
+			$temp[] = strtolower($val);
+			if (is_dir($basePath . '/' . implode('_',array_reverse($temp)))) {
 				$basePath .= '/';
-			} else {
-				$basePath .= '_';
+				$basePath .= strtolower(implode('_',array_reverse($temp)));
+				$temp = array();
 			}
-			$basePath .= strtolower($val);
 		}
-
+		$basePath .= '/' . strtolower(implode('_',array_reverse($temp)));
 		if (is_dir($basePath)) {
 			$basePath .= '/' . strtolower(basename($basePath));
 		}
-
+		if (class_exists('Cache',false)) {
+			Cache::set('class/' . $name, $basePath);
+		}
 		return $basePath;
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-class UpdateDbAdminController extends Controller {
+class DbUpdateAdminController extends Controller {
 	public function exec() {
 		if ($this->isPost()) {
 			TableVersionsDao::get()->initSchema();

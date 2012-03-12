@@ -9,7 +9,11 @@ class Controller extends Base {
 		if (!$path) {
 			$path = 'index';
 		}
-		$pathArray = explode('/',str_replace('_','/',$path));
+		$dirArray = explode('/',$path);
+		$pathArray = array();
+		foreach ($dirArray as $dir) {
+			$pathArray = array_merge($pathArray,array_reverse(explode('_',$dir)));
+		}
 		$params = array();
 		while (count($pathArray) > 0) {
 			$name = TextHelper::toCamelCase(implode('_', array_reverse($pathArray))) . 'Controller';
