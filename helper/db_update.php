@@ -2,33 +2,30 @@
 class DbUpdateHelper extends Helper {
 	public static function update() {
 		TableVersionsDao::get()->initSchema();
-		if ($handle = opendir(BASE_PATH . '/model/')) {
-			/* ディレクトリをループする際の正しい方法です */
-			while (false !== ($file = readdir($handle))) {
-				echo "$file\n";
-			}
-			
-			closedir($handle);
-		}
+		self::_update();
 	}
-	
-	public static function _update($path = '') {
+
+	private static function _update($path = '') {
 		if ($handle = opendir(BASE_PATH . '/model/' . $path)) {
-			/* ディレクトリをループする際の正しい方法です */
 			while (false !== ($file = readdir($handle))) {
-				if (is_dir($path . $file)) {
+				if (strpos($file,'.') === 0) {
+					continue;
+				}
+				if (is_dir(BASE_PATH . '/model/' . $path . $file)) {
 					self::_update($path . $file . '/');
 				}
-				
 				if (pathinfo($path . $file,PATHINFO_EXTENSION) == 'php') {
-					$pathArr = explode('/',$path);
+					$pathArr = explode('/',$path . pathinfo($path . $file,PATHINFO_FILENAME));
+					if (count($pathArr) > 1 && $pathArr[count($pathArr)-1] == $pathArr[count($pathArr)-2]) {
+						array_pop($pathArr);
+					}
 					$tempArr = array();
 					foreach ($pathArr as $val) {
 						$tempArr = array_merge($tempArr,array_reverse(explode('_',$val)));
 					}
-					$clName = TextHelper::toCamelCase(implode('_',array_reverse($tempArr)));
-					
-					$obj = call_user_func(array($clName . '::get'));
+					$tempArr = array_filter($tempArr,'strlen');
+					$clName = TextHelper::toCamelCase(implode('_',array_reverse($tempArr))) . 'Dao';
+					$obj = call_user_func($clName . '::get');
 					call_user_func(array($obj,'initSchema'));
 				}
 			}
