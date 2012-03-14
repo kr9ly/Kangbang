@@ -13,7 +13,14 @@ if (is_file('../config/site.php')) {
 	Library::load('session_' . SESSION_TYPE);
 } else {
 	define('INSTALL_MODE', true);
-	
+	define('BASE_URL', 'http://' . $_SERVER["SERVER_NAME"] . '/');
+	define('DEFAULT_LANG', 'ja_JP');
+
+	Library::load('cache_void');
+
+	View::getByPath('admin/install');
 	Controller::execByPath('admin/install');
+
 	View::displayView();
+	exit;
 }

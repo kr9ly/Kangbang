@@ -1,1 +1,2 @@
-<input type="password" name="<?=$this->name ?>" id="<?=$this->name ?>" class="input-xlarge"  placeholder="<?=$this->placeholder ?>" value="<?= $_REQUEST[$this->_name] ? $_REQUEST[$this->_name] : $this->value ?>" />
+<input type="password" name="<?=$this->name ?>" id="<?=$this->name ?>" class="input-xlarge"  style="height:28px;" placeholder="<?=$this->placeholder ?>" value="<?= $_REQUEST[$this->_name] ? $_REQUEST[$this->_name] : $this->value ?>" />
+<? if ($this->helptext) { ?><span class="help-inline"><?= $this->helptext ?></span><? } ?>
