@@ -4,7 +4,7 @@
 		<legend>
 			<?= $this->_('page.install_message') ?>
 		</legend>
-		<? Parts::display('common/alert/error',$this->error) ?>
+		<? Parts::display('common/alert/error',$this->errors['message']) ?>
 		<div class="control-group">
 			<label class="control-label" for="development_mode"><?= $this->_('page.development_mode') ?>
 			</label>
@@ -40,6 +40,13 @@
 				<? Parts::display('common/form/password','db_password','',$this->_('page.db_password.placeholder')) ?>
 			</div>
 		</div>
+		<div class="control-group<?= $this->errors['db_database'] ? ' error' : '' ?>">
+			<label class="control-label" for="db_database"><?= $this->_('page.db_database') ?>
+			</label>
+			<div class="controls">
+				<? Parts::display('common/form/text','db_database','',$this->_('page.db_database.placeholder'),$this->errors['db_database']) ?>
+			</div>
+		</div>
 		<div class="control-group">
 			<label class="control-label" for="session_type"><?= $this->_('page.session_type') ?>
 			</label>
@@ -68,18 +75,32 @@
 				<? Parts::display('common/form/select','default_timezone', $this->default_timezone) ?>
 			</div>
 		</div>
-		<div class="control-group<?= $this->errors['base_url'] ? ' error' : '' ?>">
-			<label class="control-label" for="base_url"><?= $this->_('page.base_url') ?>
+		<div class="control-group<?= $this->errors['admin_user_name'] ? ' error' : '' ?>">
+			<label class="control-label" for="admin_username"><?= $this->_('page.admin_username') ?>
 			</label>
 			<div class="controls">
-				<? Parts::display('common/form/text','base_url','http://localhost/','',$this->errors['base_url']) ?>
+				<? Parts::display('common/form/text','admin_username','',$this->_('page.admin_username.placeholder'),$this->errors['admin_user_name']) ?>
 			</div>
 		</div>
-		<div class="control-group<?= $this->errors['base_ssl_url'] ? ' error' : '' ?>">
-			<label class="control-label" for="base_ssl_url"><?= $this->_('page.base_ssl_url') ?>
+		<div class="control-group<?= $this->errors['password'] ? ' error' : '' ?>">
+			<label class="control-label" for="admin_pass"><?= $this->_('page.admin_pass') ?>
 			</label>
 			<div class="controls">
-				<? Parts::display('common/form/text','base_ssl_url','https://localhost/','',$this->errors['base_ssl_url']) ?>
+				<? Parts::display('common/form/text','admin_pass','',$this->_('page.admin_pass.placeholder'),$this->errors['password']) ?>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="enable_https"><?= $this->_('page.enable_https') ?>
+			</label>
+			<div class="controls">
+				<? Parts::display('common/form/checkbox','enable_https',$this->_('page.enable_https.label'),'1',false) ?>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="db_initialize"><?= $this->_('page.db_initialize') ?>
+			</label>
+			<div class="controls">
+				<? Parts::display('common/form/checkbox','db_initialize',$this->_('page.db_initialize.label'),'1',true) ?>
 			</div>
 		</div>
 		<div class="form-actions">

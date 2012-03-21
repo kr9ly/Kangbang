@@ -1,7 +1,7 @@
 {
 	"columns" : {
 		"session_id" : {"type":"varchar", "size":255, "required":true}
-		,"session_data" : {"type":"text", "required":true}
+		,"session_data" : {"type":"text"}
 		,"expire_date" : {"type":"datetime", "required":true}
 	}
 	,"keyName" : ["session_id"]

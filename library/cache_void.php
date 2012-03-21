@@ -1,18 +1,20 @@
 <?php
-class Cache {
-	public static function isExists($key) {
+class CacheVoid {
+	public function isExists($key) {
 		return false;
 	}
 
-	public static function get($key) {
+	public function get($key) {
 		return null;
 	}
 
-	public static function set($key ,$value) {
+	public function set($key ,$value) {
 
 	}
 
-	public static function clear() {
+	public function clear() {
 
 	}
 }
+
+Cache::setInstance(new CacheVoid());

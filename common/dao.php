@@ -239,6 +239,10 @@ class Dao extends Base {
 		Db::delete($this->tableName, $where, $this->queryWhereParams);
 	}
 
+	public function truncate() {
+		Db::execute('TRUNCATE TABLE `' . $this->tableName . '`');
+	}
+
 	public function deleteByKey($key) {
 		return Db::delete($this->tableName, $this->columns, implode(' AND ',array_map(function($val){
 			return $val . " = ?";
@@ -370,10 +374,7 @@ class Dao extends Base {
 	public function validate($params) {
 		$errors = array();
 		foreach ($this->columns as $key => $val) {
-			if (method_exists($this, 'get' . TextHelper::toCamelCase($key) . 'Query')) {
-				$params[$key] = call_user_func(array($this, 'get' . TextHelper::toCamelCase($key) . 'Query'),$params[$key]);
-			}
-			if ($val['required'] && !$val['default'] && $val['type'] != 'insertDate' && $val['type'] != 'updateDate' && $val['type'] != 'key' && !$val['autoincrement'] && !array_key_exists($key,$params)) {
+			if ($val['required'] && !$val['default'] && $val['type'] != 'insertDate' && $val['type'] != 'updateDate' && $val['type'] != 'key' && !$val['autoincrement'] && !$params[$key]) {
 				$errors[$key] = $this->_('error.column_required',$this->getColumnName($key));
 				continue;
 			}

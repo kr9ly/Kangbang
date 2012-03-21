@@ -1,18 +1,20 @@
 <?php
-class Cache {
-	public static function isExists($key) {
+class CacheApc {
+	public function isExists($key) {
 		return apc_fetch($key) !== false;
 	}
 
-	public static function get($key) {
+	public function get($key) {
 		return apc_fetch($key);
 	}
 
-	public static function set($key ,$value) {
+	public function set($key ,$value) {
 		apc_store($key, $value);
 	}
 
-	public static function clear() {
+	public function clear() {
 		apc_clear_cache('user');
 	}
 }
+
+Cache::setInstance(new CacheApc());

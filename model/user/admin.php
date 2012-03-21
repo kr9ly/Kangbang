@@ -15,8 +15,4 @@ class AdminUserDao extends Dao {
 		}
 		return;
 	}
-
-	public function insertDefaultRecords() {
-		$this->insert(array('admin_user_name' => 'admin','password' => 'password'));
-	}
 }
