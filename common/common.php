@@ -9,7 +9,11 @@ if (is_file('../config/site.php')) {
 	require '../config/site.php';
 
 	define('BASE_URL', 'http://' . $_SERVER["SERVER_NAME"] . pathinfo($_SERVER['PHP_SELF'], PATHINFO_DIRNAME));
-	define('BASE_SSL_URL', 'http://' . $_SERVER["SERVER_NAME"] . pathinfo($_SERVER['PHP_SELF'], PATHINFO_DIRNAME));
+	if (ENABLE_HTTPS) {
+		define('BASE_SSL_URL', 'https://' . $_SERVER["SERVER_NAME"] . pathinfo($_SERVER['PHP_SELF'], PATHINFO_DIRNAME));
+	} else {
+		define('BASE_SSL_URL', 'http://' . $_SERVER["SERVER_NAME"] . pathinfo($_SERVER['PHP_SELF'], PATHINFO_DIRNAME));
+	}
 
 	date_default_timezone_set(DEFAULT_TIMEZONE);
 	Library::load('cache_' . CACHE_TYPE);
