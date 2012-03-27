@@ -44,6 +44,10 @@ class Config implements Iterator {
 		return $this->_(key($this->conf));
 	}
 
+	function _get($key) {
+		return $this->conf[$key];
+	}
+
 	function next() {
 		next($this->conf);
 	}
@@ -68,6 +72,10 @@ class Config implements Iterator {
 			return $escape ? htmlspecialchars($this->_($this->conf[$key])) : $this->_($this->conf[$key]);
 		}
 		return '';
+	}
+
+	function key_exists($key) {
+		return array_key_exists($key, $this->conf);
 	}
 
 	function _($key) {
