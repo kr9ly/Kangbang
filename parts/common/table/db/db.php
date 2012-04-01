@@ -1,8 +1,9 @@
 <?php
 class DbTableCommonParts extends Parts {
-	public function exec($dao,$limit = 10) {
-		if (func_num_args() > 2) {
+	public function exec($id,$dao,$limit = 10) {
+		if (func_num_args() > 3) {
 			$args = func_get_args();
+			array_shift($args);
 			array_shift($args);
 			array_shift($args);
 		} else {
@@ -12,6 +13,7 @@ class DbTableCommonParts extends Parts {
 		$page = $_REQUEST['p'] ? $_REQUEST['p'] : 1;
 		$dao->limit($limit)->offset((($page - 1) * $cnt));
 		$data = call_user_func_array(array($dao,'select'), $args);
+		TemplateView::get()->setParam('id',$id);
 		TemplateView::get()->setParam('columns',$args);
 		TemplateView::get()->setParam('data',$data);
 		TemplateView::get()->setParam('page',$page);

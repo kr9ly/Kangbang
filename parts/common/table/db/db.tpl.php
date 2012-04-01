@@ -5,7 +5,7 @@
 		<? } ?>
 	</ul>
 </div>
-<table class="table table-striped table-bordered table-condensed">
+<table id="<?= $this->id ?>" class="table table-striped table-bordered table-condensed">
 	<thead>
 		<tr>
 		<? foreach ($this->columns as $val) { ?>

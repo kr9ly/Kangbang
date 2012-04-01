@@ -23,11 +23,12 @@ class TemplateView extends View {
 			$template = str_replace("\t","",file_get_contents(BASE_PATH . $this->path . '/' . pathinfo($this->path,PATHINFO_FILENAME) . '.tpl.php'));
 			Cache::set('template/' . $this->path, $template);
 		} else {
-			die('not found template:' . $this->path);
+			return false;
 		}
 		ob_start();
 		eval('?>' . $template);
 		ob_end_flush();
+		return true;
 	}
 
 	public function __get($key) {

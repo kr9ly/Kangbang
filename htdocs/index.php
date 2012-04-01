@@ -8,5 +8,7 @@ $view = Controller::execByPath($_GET['q']);
 if ($view) {
 	$view->display();
 } else {
-	View::displayView();
+	if (!View::displayView()) {
+		Error::not_found('no-template');
+	}
 }
