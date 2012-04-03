@@ -118,7 +118,7 @@ class Dao extends Base {
 	}
 
 	public function selectByKey($key) {
-		return Db::select($this->tableName, $this->columns, implode(' AND ',array_map(function($val){
+		return Db::select($this->tableName, array_keys($this->columns), implode(' AND ',array_map(function($val){
 			return $val . " = ?";
 		},$this->keyName)), array($key));
 	}
@@ -200,15 +200,15 @@ class Dao extends Base {
 	}
 
 	public function update($params) {
-		$errors = $this->validate($params);
-		if (!$errors) {
+		$errors = $this->validate($params,true);
+		if ($errors) {
 			die(var_dump($errors));
 		}
 		foreach ($this->columns as $key => $val) {
 			if ($val['type'] == 'updateDate') {
 				$params[$key] = DateHelper::now();
 			}
-			if (method_exists($this, 'get' . TextHelper::toCamelCase($key) . 'Query')) {
+			if ($params[$key] && method_exists($this, 'get' . TextHelper::toCamelCase($key) . 'Query')) {
 				$params[$key] = call_user_func(array($this, 'get' . TextHelper::toCamelCase($key) . 'Query'),$params[$key]);
 			}
 		}
@@ -371,11 +371,11 @@ class Dao extends Base {
 		$this->queryOffset = $offset;
 	}
 
-	public function validate($params) {
+	public function validate($params,$update = false) {
 		$errors = array();
 		foreach ($this->columns as $key => $val) {
 			if ($val['required'] && !$val['default'] && $val['type'] != 'insertDate' && $val['type'] != 'updateDate' && $val['type'] != 'key' && !$val['autoincrement'] && !$params[$key]) {
-				$errors[$key] = $this->_('error.column_required',$this->getColumnName($key));
+				if (!$update) $errors[$key] = $this->_('error.column_required',$this->getColumnName($key));
 				continue;
 			}
 			if (array_key_exists($key,$params)) {

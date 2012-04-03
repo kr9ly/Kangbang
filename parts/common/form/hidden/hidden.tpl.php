@@ -1,0 +1,1 @@
+<input type="hidden" name="<?= $this->name ?>" value="<?= $_REQUEST[$this->_name] ? $_REQUEST[$this->_name] : $this->value ?>" />

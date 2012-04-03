@@ -13,6 +13,8 @@ class DbTableCommonParts extends Parts {
 		$page = $_REQUEST['p'] ? $_REQUEST['p'] : 1;
 		$dao->limit($limit)->offset((($page - 1) * $cnt));
 		$data = call_user_func_array(array($dao,'select'), $args);
+
+		TemplateView::get()->setParam('keyName',$dao->keyName);
 		TemplateView::get()->setParam('id',$id);
 		TemplateView::get()->setParam('columns',$args);
 		TemplateView::get()->setParam('data',$data);

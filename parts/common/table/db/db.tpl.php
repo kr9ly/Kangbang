@@ -16,6 +16,7 @@
 	<tbody>
 		<? foreach ($this->data as $row) { ?>
 		<tr>
+			<? foreach ($this->keyName as $val) { ?><? Parts::display("common/form/hidden",$val,$row[$val]) ?><? } ?>
 			<? foreach ($this->columns as $column) { ?>
 				<td><?= htmlspecialchars($row[$column]) ?></td>
 			<? } ?>

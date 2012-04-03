@@ -1,0 +1,1 @@
+<label class="control-label" for="<?= $this->for ?>"><?= $this->text ?></label>
