@@ -57,6 +57,10 @@ class Loader {
 					$basePath .= '/view';
 					array_pop($array);
 					break;
+				case 'Filter':
+					$basePath .= '/filter';
+					array_pop($array);
+					break;
 				default:
 					$basePath .= '/common';
 					break;

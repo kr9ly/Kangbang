@@ -3,7 +3,11 @@ require '../common/common.php';
 
 View::getByPath($_GET['q']);
 
-$view = Controller::execByPath($_GET['q']);
+$controller = Controller::getByPath($_GET['q']);
+Filter::setController($controller);
+Filter::before();
+$view = $controller->exec();
+Filter::after();
 
 if ($view) {
 	$view->display();

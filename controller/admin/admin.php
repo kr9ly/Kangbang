@@ -1,9 +1,6 @@
 <?php
 class AdminController extends Controller {
 	public function exec() {
-		if (!AdminUserHelper::isAdmin()) {
-			NavigateHelper::redirect('admin/login');
-		}
 		$environments = array(
 			$this->_('env.development_mode') => DEVELOPMENT_MODE ? 'ON' : OFF
 			,$this->_('env.db_type') => DB_TYPE
