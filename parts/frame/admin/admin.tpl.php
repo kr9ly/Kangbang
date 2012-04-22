@@ -11,3 +11,7 @@
 	<body>
 		<? Parts::display('admin/navbar') ?>
 		<div class="container">
+		<?= $this->_innerHtml ?>
+		</div>
+	</body>
+</html>

@@ -1,3 +1,2 @@
-<?php Parts::display('header') ?>
 Hello World!
-<?php Parts::display('footer') ?>
+<?php Parts::frame('main') ?>

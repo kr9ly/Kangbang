@@ -3,6 +3,7 @@ class TemplateView extends View {
 	static $pathLangs = array();
 
 	private $path;
+	private $frame;
 	private $params = array();
 
 	public function setParam($name, $value) {
@@ -11,6 +12,10 @@ class TemplateView extends View {
 
 	public function setPath($path) {
 		$this->path = $path;
+	}
+
+	public function setFrame($path) {
+		$this->frame = $path;
 	}
 
 	public function display() {
@@ -28,6 +33,7 @@ class TemplateView extends View {
 		ob_start();
 		eval('?>' . $template);
 		ob_end_flush();
+
 		return true;
 	}
 

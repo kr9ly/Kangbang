@@ -4,3 +4,6 @@
 	<title>KangBang</title>
 </head>
 <body>
+<?= $this->_innerHtml ?>
+</body>
+</html>

@@ -1,4 +1,3 @@
-<? Parts::display('admin/login_header'); ?>
 <form class="form-horizontal" method="POST">
 	<fieldset>
 		<legend>
@@ -9,19 +8,19 @@
 			<label class="control-label" for="login_id"><?= $this->_('page.login_id') ?>
 			</label>
 			<div class="controls">
-				<? Parts::display('common/form/text','login_id','',$this->_('page.login_id')) ?>
+				<? Parts::form('text','login_id','',$this->_('page.login_id')) ?>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label" for="password"><?= $this->_('page.password') ?>
 			</label>
 			<div class="controls">
-				<? Parts::display('common/form/password','password','',$this->_('page.password')) ?>
+				<? Parts::form('password','password','',$this->_('page.password')) ?>
 			</div>
 		</div>
 		<div class="form-actions">
-			<? Parts::display('common/form/submit','login',$this->_('page.button.login')) ?>
+			<? Parts::form('submit','login',$this->_('page.button.login')) ?>
 		</div>
 	</fieldset>
 </form>
-<? Parts::display('admin/footer'); ?>
+<? Parts::frame('admin/login'); ?>

@@ -14,3 +14,7 @@
 		</div>
 	</div>
 	<div class="container">
+	<?= $this->_innerHtml ?>
+	</div>
+	</body>
+</html>

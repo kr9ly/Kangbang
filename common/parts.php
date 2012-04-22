@@ -27,6 +27,19 @@ class Parts extends Base {
 		TemplateView::get()->setPath('/parts/' . $path);
 		View::displayView();
 	}
+
+	public static function __callstatic($name, $args) {
+		$path = array_shift($args);
+		call_user_func_array('Parts::display', array_merge(array('common/' . $name . '/' . $path),$args));
+	}
+
+	public static function frame($path) {
+		$args = func_get_args();
+		array_shift($args);
+		$html = ob_get_clean();
+
+		call_user_func_array('Parts::display', array_merge(array('frame/' . $path,$html),$args));
+	}
 	/* static end */
 
 	public function exec() {

@@ -5,17 +5,17 @@
 	<div class="modal-body">
 		<div class="form-horizontal">
 			<fieldset>
-				<? Parts::display('common/form/hidden','admin_user_id') ?>
+				<? Parts::form('hidden','admin_user_id') ?>
 				<div class="control-group">
-					<? Parts::display('common/form/label','admin_user_name',$this->_('page.admin_user_name')) ?>
+					<? Parts::form('label','admin_user_name',$this->_('page.admin_user_name')) ?>
 					<div class="controls">
-						<? Parts::display('common/form/text','admin_user_name',$this->admin_user_name) ?>
+						<? Parts::form('text','admin_user_name',$this->admin_user_name) ?>
 					</div>
 				</div>
 				<div class="control-group">
-					<? Parts::display('common/form/label','password',$this->_('page.password')) ?>
+					<? Parts::form('label','password',$this->_('page.password')) ?>
 					<div class="controls">
-						<? Parts::display('common/form/password','password') ?>
+						<? Parts::form('password','password') ?>
 					</div>
 				</div>
 			</fieldset>

@@ -4,6 +4,10 @@ class Base {
 	static $global;
 	private $lang;
 
+	public static function getInstance() {
+		return new static();
+	}
+
 	public function getClassPath() {
 		return Loader::getClassPath(get_class($this));
 	}
