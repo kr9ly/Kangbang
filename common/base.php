@@ -1,5 +1,5 @@
 <?php
-class Base {
+abstract class Base {
 	static $langs = array();
 	static $global;
 	private $lang;
@@ -51,5 +51,9 @@ class Base {
 			return sprintf(self::$global[$key], $args);
 		}
 		return $key;
+	}
+
+	public static function unittest() {
+		Test::assert('trim', ' == "2"',  'not found any test',array('1'));
 	}
 }

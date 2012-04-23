@@ -1,5 +1,5 @@
 <?php
-abstract class Filter {
+abstract class Filter extends Base {
 	private static $controller;
 
 	public static function setController($controller) {
