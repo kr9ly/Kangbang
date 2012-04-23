@@ -39,6 +39,7 @@ class Parts extends Base {
 		$html = ob_get_clean();
 
 		call_user_func_array('Parts::display', array_merge(array('frame/' . $path,$html),$args));
+		ob_start();
 	}
 	/* static end */
 
