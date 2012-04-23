@@ -32,13 +32,13 @@ class View extends Base {
 		$pathArray = array_filter($pathArray,'strlen');
 		while (count($pathArray) > 0) {
 			$search = implode('/',$pathArray);
-			if (is_file(BASE_PATH . '/controller/' . $search . '.tpl.php')) {
+			if (is_file(BASE_PATH . '/page/' . $search . '.tpl.php')) {
 				$view = TemplateView::get();
-				$view->setPath('/controller/' . $search);
+				$view->setPath('/page/' . $search);
 				return $view;
-			} else if (is_file(BASE_PATH . '/controller/' . $search . '/' . pathinfo(BASE_PATH . '/controller/' . $search . '.tpl.php',PATHINFO_FILENAME) . '.php')) {
+			} else if (is_file(BASE_PATH . '/page/' . $search . '/' . pathinfo(BASE_PATH . '/page/' . $search . '.tpl.php',PATHINFO_FILENAME) . '.php')) {
 				$view = TemplateView::get();
-				$view->setPath('/controller/' . $search . '/' . pathinfo(BASE_PATH . '/controller/' . $search . '.php',PATHINFO_FILENAME));
+				$view->setPath('/page/' . $search . '/' . pathinfo(BASE_PATH . '/page/' . $search . '.php',PATHINFO_FILENAME));
 				return $view;
 			}
 			array_pop($pathArray);

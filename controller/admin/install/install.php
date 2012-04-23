@@ -1,5 +1,5 @@
 <?php
-class InstallAdminController extends Controller {
+class InstallAdminPage extends Page {
 	public function exec() {
 		if (!INSTALL_MODE) {
 			die('access denied.');

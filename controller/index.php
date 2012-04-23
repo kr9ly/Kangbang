@@ -1,5 +1,5 @@
 <?php
-class IndexController extends Controller {
+class IndexPage extends Page {
 	public function exec() {
 
 	}

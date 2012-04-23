@@ -57,7 +57,7 @@ if (is_file('../config/site.php')) {
 	Library::load('cache_void');
 
 	View::getByPath('admin/install');
-	Controller::execByPath('admin/install');
+	Page::execByPath('admin/install');
 
 	View::displayView();
 	exit;

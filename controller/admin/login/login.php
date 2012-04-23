@@ -1,5 +1,5 @@
 <?php
-class LoginAdminController extends Controller {
+class LoginAdminPage extends Page {
 	public function exec() {
 		if (AdminUserHelper::isAdmin()) {
 			NavigateHelper::redirect('admin');

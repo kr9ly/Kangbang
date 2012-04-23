@@ -1,5 +1,5 @@
 <?php
-class AdminController extends Controller {
+class AdminPage extends Page {
 	public function exec() {
 		$environments = array(
 			$this->_('env.development_mode') => DEVELOPMENT_MODE ? 'ON' : OFF

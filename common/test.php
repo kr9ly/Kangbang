@@ -48,8 +48,8 @@ class Test {
 					$tempArr = array_filter($tempArr,'strlen');
 
 					switch ($pathArr[0]) {
-						case 'controller':
-							$clName = TextHelper::toCamelCase(implode('_',array_reverse($tempArr))) . 'Controller';
+						case 'page':
+							$clName = TextHelper::toCamelCase(implode('_',array_reverse($tempArr))) . 'Page';
 							break;
 						case 'model':
 							$clName = TextHelper::toCamelCase(implode('_',array_reverse($tempArr))) . 'Dao';

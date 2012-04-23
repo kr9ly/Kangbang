@@ -1,9 +1,9 @@
 <?php
 abstract class Filter extends Base {
-	private static $controller;
+	private static $page;
 
-	public static function setController($controller) {
-		self::$controller = $controller;
+	public static function setPage($page) {
+		self::$page = $page;
 	}
 
 	public static function get() {
@@ -32,7 +32,7 @@ abstract class Filter extends Base {
 	}
 
 	public function acceptByProperty($name,$value) {
-		if (!self::$controller || !property_exists(self::$controller, $name) || self::$controller->$$name != $value) {
+		if (!self::$page || !property_exists(self::$page, $name) || self::$page->$$name != $value) {
 			$this->enable = false;
 		}
 		return $this;
@@ -46,7 +46,7 @@ abstract class Filter extends Base {
 	}
 
 	public function rejectByProperty($name,$value) {
-		if (self::$controller && property_exists(self::$controller, $name) && self::$controller->$$name == $value) {
+		if (self::$page && property_exists(self::$page, $name) && self::$page->$$name == $value) {
 			$this->enable = false;
 		}
 		return $this;

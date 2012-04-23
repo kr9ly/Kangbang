@@ -1,5 +1,5 @@
 <?php
-class Controller extends Base {
+class Page extends Base {
 	/* static */
 	public static function getInstance() {
 		return self::initInstance(new static(),'',array());
@@ -16,11 +16,11 @@ class Controller extends Base {
 		}
 		$params = array();
 		while (count($pathArray) > 0) {
-			$name = TextHelper::toCamelCase(implode('_', array_reverse($pathArray))) . 'Controller';
+			$name = TextHelper::toCamelCase(implode('_', array_reverse($pathArray))) . 'Page';
 			if (Loader::classExists($name)) {
-				$controller = new $name;
+				$page = new $name;
 				$action = '';
-				if ($params > 0 && method_exists($controller, $params[0])) {
+				if ($params > 0 && method_exists($page, $params[0])) {
 					$action = array_shift($params);
 				}
 				return self::initInstance(new $name, $action, $params);
@@ -31,16 +31,16 @@ class Controller extends Base {
 	}
 
 	public static function execByPath($path) {
-		$controller = self::getByPath($path);
-		if ($controller) {
-			return call_user_func_array(array($controller,$controller->getAction()),$controller->getParams());
+		$page = self::getByPath($path);
+		if ($page) {
+			return call_user_func_array(array($page,$page->getAction()),$page->getParams());
 		}
 	}
 
-	private static function initInstance($controller,$action,$params) {
-		$controller->action = $action ? $action : 'exec';
-		$controller->params = $params;
-		return $controller;
+	private static function initInstance($page,$action,$params) {
+		$page->action = $action ? $action : 'exec';
+		$page->params = $params;
+		return $page;
 	}
 	/* static end */
 	private $action;

@@ -1,5 +1,5 @@
 <?php
-class CacheClearAdminController extends Controller {
+class CacheClearAdminPage extends Page {
 	public function exec() {
 		if ($this->isPost()) {
 			Cache::clear();

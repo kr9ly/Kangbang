@@ -1,5 +1,5 @@
 <?php
-class DbUpdateAdminController extends Controller {
+class DbUpdateAdminPage extends Page {
 	public function exec() {
 		if ($this->isPost()) {
 			DbUpdateHelper::update();

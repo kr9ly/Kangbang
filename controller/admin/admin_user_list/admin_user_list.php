@@ -1,5 +1,5 @@
 <?php
-class AdminUserListAdminController extends Controller {
+class AdminUserListAdminPage extends Page {
 	public function exec() {
 
 	}

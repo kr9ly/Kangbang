@@ -37,8 +37,8 @@ class Loader {
 		$prefix = '';
 		if (count($array) > 1) {
 			switch (end($array)) {
-				case 'Controller':
-					$basePath .= '/controller';
+				case 'Page':
+					$basePath .= '/page';
 					array_pop($array);
 					break;
 				case 'Dao':

@@ -3,10 +3,10 @@ require '../common/common.php';
 
 View::getByPath($_GET['q']);
 
-$controller = Controller::getByPath($_GET['q']);
-Filter::setController($controller);
+$page = Page::getByPath($_GET['q']);
+Filter::setPage($page);
 Filter::before();
-$view = Controller::execByPath($_GET['q']);
+$view = Page::execByPath($_GET['q']);
 Filter::after();
 
 if ($view) {
