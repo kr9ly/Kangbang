@@ -54,6 +54,6 @@ abstract class Base {
 	}
 
 	public static function unittest() {
-		Test::assert('trim', ' == "2"',  'not found any test',array('1'));
+
 	}
 }
