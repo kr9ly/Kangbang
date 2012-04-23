@@ -15,4 +15,13 @@ class AdminUserDao extends Dao {
 		}
 		return;
 	}
+
+	public static function unittest() {
+		$dao = $this->get();
+		$dao->insert(array('user_name' => 'test', 'password' => 'password'));
+		$dao->insert(array('user_name' => 'test2', 'password' => 'password'));
+		Test::assert(array($dao,'getAdminUserId'), '> 0', 'can register admin user',array('test','password'));
+		Test::assert(array($dao,'getAdminUserId'), '== 0', 'can reject invalid user',array('test3','password'));
+		Test::assert(array($dao,'getAdminUserId'), '== 0', 'can reject invalid password',array('test','password2'));
+	}
 }
