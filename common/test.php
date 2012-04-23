@@ -23,6 +23,11 @@ class Test {
 	}
 
 	public static function doAllTests($path = '') {
+		define('UNITTEST',true);
+		define('DB_DATABASE_TEST',DB_DATABASE . '_test');
+
+		DbUpdateHelper::update(true);
+
 		if ($handle = opendir(BASE_PATH . '/' . $path)) {
 			while (false !== ($file = readdir($handle))) {
 				if (strpos($file,'.') === 0) {

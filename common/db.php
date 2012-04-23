@@ -7,7 +7,11 @@ class Db {
 
 	public static function init() {
 		if (!self::$dbConn) {
-			$dsn = DB_TYPE . '://' . DB_USERNAME . ':' . rawurlencode(DB_PASSWORD) . '@' . rawurlencode(DB_SERVER) . '/' . DB_DATABASE;
+			if (UNITTEST) {
+				$dsn = DB_TYPE . '://' . DB_USERNAME . ':' . rawurlencode(DB_PASSWORD) . '@' . rawurlencode(DB_SERVER) . '/' . DB_DATABASE_TEST;
+			} else {
+				$dsn = DB_TYPE . '://' . DB_USERNAME . ':' . rawurlencode(DB_PASSWORD) . '@' . rawurlencode(DB_SERVER) . '/' . DB_DATABASE;
+			}
 			self::$dbConn = @NewADOConnection($dsn);
 			if (self::$dbConn) {
 				return true;
