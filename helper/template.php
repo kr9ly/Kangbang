@@ -29,7 +29,7 @@ class TemplateHelper extends Helper {
 		$args = array_map(function($arg){
 			$arg = trim($arg);
 			if (strpos($arg,'$') === 0) {
-				return '$this->' . $arg;
+				return '$this->' . substr($arg,1);
 			} else if (strpos($arg,'_') === 0) {
 				return '$this->_("' . substr($arg,1) . '")';
 			} else if ($arg == 'true' || $arg == 'false') {
