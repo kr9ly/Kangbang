@@ -1,5 +1,5 @@
 <?php
-class Helper extends Base {
+class Helper {
 	final private function __construct() {
 
 	}

@@ -52,8 +52,4 @@ abstract class Base {
 		}
 		return $key;
 	}
-
-	public static function unittest() {
-
-	}
 }

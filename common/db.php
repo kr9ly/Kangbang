@@ -7,7 +7,7 @@ class Db {
 
 	public static function init() {
 		if (!self::$dbConn) {
-			if (UNITTEST) {
+			if (defined('UNITTEST')) {
 				$dsn = DB_TYPE . '://' . DB_USERNAME . ':' . rawurlencode(DB_PASSWORD) . '@' . rawurlencode(DB_SERVER) . '/' . DB_DATABASE_TEST;
 			} else {
 				$dsn = DB_TYPE . '://' . DB_USERNAME . ':' . rawurlencode(DB_PASSWORD) . '@' . rawurlencode(DB_SERVER) . '/' . DB_DATABASE;
