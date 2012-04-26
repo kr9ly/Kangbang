@@ -3,6 +3,7 @@ class TemplateHelper extends Helper {
 	private static $frames = array();
 
 	public static function convert($html) {
+		self::$frames = array();
 		$html = str_replace("\t","",$html);
 		$html = preg_replace('/_{(.+)}/u', "TemplateHelper::convertLang", $html);
 		$html = preg_replace('/${(.+)}/u', '<?= $this->$1 ?>', $html);
