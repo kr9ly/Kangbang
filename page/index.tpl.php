@@ -1,2 +1,3 @@
+<frame:main>
 Hello World!
-<?php Parts::frame('main') ?>
+</frame:main>

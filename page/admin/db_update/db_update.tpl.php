@@ -1,6 +1,7 @@
+<frame:admin>
 <form method="POST">
-	<label><?= $this->_('page.info') ?></label>
-	<? Parts::alert('success',$this->success) ?>
-	<button type="submit" class="btn btn-large btn-primary"><?= $this->_('page.button.update') ?></button>
+	<label>_{page.info}</label>
+	<alert: success,$success />
+	<button type="submit" class="btn btn-large btn-primary">_{page.button.update}</button>
 </form>
-<? Parts::frame('admin'); ?>
+</frame:admin>
