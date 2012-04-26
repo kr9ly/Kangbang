@@ -1,17 +1,17 @@
 <html>
 	<head>
-		<title><?= $this->_('site.name') ?> - <?= $this->_('page.admin') ?></title>
+		<title>_{site.name} - ${title}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="<?=$this->http('css/bootstrap.min.css') ?>" rel="stylesheet">
-		<link href="<?=$this->http('css/bootstrap-responsive.min.css') ?>" rel="stylesheet">
-		<script src="<?= $this->http('js/jquery-1.7.1.min.js') ?>"></script>
-		<script src="<?= $this->http('js/bootstrap.min.js') ?>"></script>
-		<script src="<?= $this->http('js/main.js') ?>"></script>
+		<link href="url{css/bootstrap.min.css}" rel="stylesheet">
+		<link href="url{css/bootstrap-responsive.min.css}" rel="stylesheet">
+		<script src="url{js/jquery-1.7.1.min.js}"></script>
+		<script src="url{js/bootstrap.min.js}"></script>
+		<script src="url{js/main.js}"></script>
 	</head>
 	<body>
-		<? Parts::display('admin/navbar') ?>
+		<parts: admin/navbar />
 		<div class="container">
-		<?= $this->_innerHtml ?>
+		${_innerHtml}
 		</div>
 	</body>
 </html>

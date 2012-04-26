@@ -5,8 +5,9 @@ class TemplateHelper extends Helper {
 	public static function convert($html) {
 		self::$frames = array();
 		$html = str_replace("\t","",$html);
-		$html = preg_replace_callback('/_{(.+)}/u', "TemplateHelper::convertLang", $html);
-		$html = preg_replace('/${(.+)}/u', '<?= $this->$1 ?>', $html);
+		$html = preg_replace_callback('/_{(.+?)}/u', "TemplateHelper::convertLang", $html);
+		$html = preg_replace('/\${(.+?)}/u', '<?= $this->$1 ?>', $html);
+		$html = preg_replace('/url{(.+?)}/u', '<?= $this->http("$1") ?>', $html);
 		$html = preg_replace_callback("/<(\/)?([a-z]+):(.+)>/u", "TemplateHelper::convertTag", $html);
 		return $html;
 	}

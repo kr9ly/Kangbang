@@ -1,4 +1,4 @@
-<frame:admin>
+<frame:admin,_page.name>
 <form method="POST">
 	<label>_{page.info}</label>
 	<alert: success,$success />

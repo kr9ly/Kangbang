@@ -1,4 +1,4 @@
-<frame: admin/login>
+<frame: admin/login,_page.name>
 <form class="form-horizontal" method="POST">
 	<fieldset>
 		<legend>
