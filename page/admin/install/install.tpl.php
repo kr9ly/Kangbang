@@ -86,7 +86,8 @@
 			</div>
 		</div>
 		<div class="control-group<?= $this->errors['admin_user_name'] ? ' error' : '' ?>">
-			<label class="control-label" for="admin_username"><?= $this->_('page.admin_username') ?>
+			<label class="control-label" for="admin_username">
+			_{page.admin_username}
 			</label>
 			<div class="controls">
 				<form: text,admin_username,,_page.admin_username.placeholder,$errors['admin_user_name'] />
@@ -109,7 +110,8 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label" for="db_initialize"><?= $this->_('page.db_initialize') ?>
+			<label class="control-label" for="db_initialize">
+			_{page.db_initialize}
 			</label>
 			<div class="controls">
 				<form: checkbox,db_initialize,_page.db_initialize.label,1,true />

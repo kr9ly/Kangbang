@@ -7,25 +7,44 @@ class TextileHelper extends Helper {
 
 		$lines = explode("\n",$textile);
 		$converting = true;
-		$inblock = false;
+		$blocktype = false;
 		foreach ($lines as $line) {
-			$length = mb_strlen($textile);
+			$length = mb_strlen($line);
 			if ($line == "") {
 				$res .= "\n";
-				if ($inblock) {
-					$res .= '</p>';
-					$inblock = false;
+				if ($blocktype) {
+					$res .= '</' . $blocktype . '>';
+					$blocktype = false;
 				}
 				continue;
 			}
-			if (!$inblock) {
-				if (preg_match("/^p[>=\)]\./u",$line,$matches)) {
-
+			if (!$blocktype) {
+				$res .= "\n";
+				if (strpos($line, 'bq.') === 0) {
+					$blocktype = 'blockquote';
+					$line = substr($line, 3);
+					$res .= "<blockquote>\n";
+				} else if (preg_match("/^p([>=])?(\(+|\)+)?\./u",$line,$matches)) {
+					$blocktype = 'p';
+					if ($matches[1] == '>') {
+						$style = 'text-align:right;';
+					} else if ($matches[1] == '=') {
+						$style = 'text-align:center;';
+					}
+					if (strpos($matches[1], '(') === 0) {
+						$margin = strlen($mathces[1]);
+						$style .= 'margin-left:' . $margin . 'em';
+					} else if (strpos($matches[1], ')') === 0) {
+						$margin = strlen($mathces[1]);
+						$style .= 'margin-right:' . $margin . 'em';
+					}
+					$block = '<p' . ($style ? ' style="' . $style . '"' : '') . '>';
+					$line = substr($line,strlen($block));
+					$res .= $block . "\n";
 				}
 			} else {
-				$res .= "<br />";
+				$res .= "<br />\n";
 			}
-			$res .= "\n";
 			for ($i=0;$i<$length;$i++) {
 				$chr = mb_substr($line, $i, 1);
 				$temp = $chr;
