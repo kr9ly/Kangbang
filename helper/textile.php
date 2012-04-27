@@ -119,6 +119,13 @@ class TextileHelper extends Helper {
 							$i = $offset;
 						}
 						break;
+					case '!':
+						$offset = mb_strpos(mb_substr($line, $i+1), '!');
+						if ($offset !== false && filter_var(mb_substr($line, $i+1, $offset),FILTER_VALIDATE_URL)) {
+							$temp = '<img src="' . mb_substr($line, $i+1, $offset) . '"/>';
+							$i = $offset;
+						}
+						break;
 					case '"':
 						if (preg_match("/[^ ](\"(.+?)\":(.+?))[ $]/u", mb_substr($line,$i==0 ? 0 : $i-1), $matches) && filter_var($matches[3],FILTER_VALIDATE_URL)) {
 							$temp = '<a href="' . $matches[3] . '">' . $matches[2] . '</a>';
