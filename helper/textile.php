@@ -26,6 +26,7 @@ class TextileHelper extends Helper {
 				$blocktype = 'pre';
 				$line = substr($line, 4);
 				$res .= "<pre>\n";
+				$converting = false;
 			} else if (preg_match("/^p([>=])?(\(+|\)+)?\./u",$line,$matches)) {
 				if ($blocktype) {
 					$res .= "\n</" . $blocktype . ">\n";
@@ -69,6 +70,7 @@ class TextileHelper extends Helper {
 				$res .= "<br />\n";
 			}
 			if (!$converting) {
+				$res .= $line;
 				continue;
 			}
 			for ($i=0;$i<$length;$i++) {
