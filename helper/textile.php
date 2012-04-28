@@ -265,7 +265,9 @@ class TextileHelper extends Helper {
 								if (preg_match("/\/([0-9])/u", $matches[1], $number)) {
 									$tOptions .= ' rowspan="' . $number[1] . '"';
 								}
-								if (strpos($matches[1],'<') !== false) {
+								if (strpos($matches[1],'<>') !== false) {
+									$tStyle .= 'text-align:justify;';
+								} else if (strpos($matches[1],'<') !== false) {
 									$tStyle .= 'text-align:left;';
 								} else if (strpos($matches[1],'>') !== false) {
 									$tStyle .= 'text-align:right;';
