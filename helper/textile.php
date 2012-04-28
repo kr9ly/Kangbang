@@ -1,4 +1,5 @@
 <?php
+Library::load('3rdparty/geshi/geshi');
 class TextileHelper extends Helper {
 	public static function convert($textile) {
 		$res = "";
@@ -16,6 +17,14 @@ class TextileHelper extends Helper {
 				case strpos($line, 'pre.') === 0:
 					$newBlock = 'pre';
 					break;
+				case strpos($line, 'code.') === 0:
+					$res .= '</code>' . "\n";
+					$blocktype = false;
+					$converting = true;
+					continue 2;
+				case preg_match("/^code:([a-z_]+)\./u",$line,$matches):
+					$newBlock = 'code';
+					break;
 				case preg_match("/^p([>=])?([\(\)]+)?\./u",$line,$matches):
 					$newBlock = 'p';
 					break;
@@ -32,19 +41,39 @@ class TextileHelper extends Helper {
 					$newBlock = 'ol';
 					break;
 				case $line == "":
-					$newBlock = 'p';
-					$matches = false;
+					switch ($blocktype) {
+						case 'code':
+							$newBlock = $blocktype;
+							$cont = true;
+							break;
+						default:
+							$newBlock = 'p';
+							$matches = false;
+							break;
+					}
 					break;
 				default:
-					$newBlock = 'p';
+					switch ($blocktype) {
+						case 'pre':
+						case 'code':
+						case 'blockquote':
+							$newBlock = $blocktype;
+							break;
+						default:
+							$newBlock = 'p';
+							break;
+					}
 					$cont = true;
 					break;
 			}
-			if ($blocktype && (!$line || !(($cont || $newBlock == 'ul' || $newBlock == 'table' || $newBlock == 'ol') && $blocktype == $newBlock))) {
+			if ($blocktype && ((!$cont && !$line) || !(($cont || $newBlock == 'ul' || $newBlock == 'table' || $newBlock == 'ol') && $blocktype == $newBlock))) {
 				$res .= implode('',array_fill(0, $nestlevel ? $nestlevel : 1, '</' . $blocktype . '>')) . "\n";
 				list($blocktype, $converting, $nestlevel) = array(false, true, 0);
 			} else {
 				switch ($blocktype) {
+					case 'code':
+						$res .= "\n";
+						break;
 					case 'ol':
 					case 'ul':
 					case false:
@@ -59,12 +88,27 @@ class TextileHelper extends Helper {
 			}
 			switch ($newBlock) {
 				case 'blockquote':
+					if ($blocktype == 'blockquote') {
+						break;
+					}
 					$line = substr($line, 3);
 					$res .= "<blockquote>\n";
 					break;
 				case 'pre':
+					if ($blocktype == 'pre') {
+						break;
+					}
 					$line = substr($line, 4);
 					$res .= "<pre>\n";
+					$converting = false;
+					break;
+				case 'code':
+					if ($blocktype == 'code') {
+						break;
+					}
+					$lang = $matches[1];
+					$line = substr($line, strlen($matches[0]));
+					$res .= '<code class="' . $lang . '">' . "\n";
 					$converting = false;
 					break;
 				case 'p':
@@ -129,67 +173,73 @@ class TextileHelper extends Helper {
 			}
 			$blocktype = $newBlock;
 			if (!$converting) {
-				$res .= $line;
+				switch ($blocktype) {
+					case 'code':
+						$res .= $line;
+						break;
+					default:
+						$res .= htmlspecialchars($line);
+				}
 				continue;
 			}
 			$length = mb_strlen($line);
 			for ($i=0;$i<$length;$i++) {
 				$chr = mb_substr($line, $i, 1);
-				$temp = $chr;
+				$temp = htmlspecialchars($chr);
 				switch ($chr) {
 					case '*':
 						$offset = mb_strpos(mb_substr($line, $i+1), '*');
 						if ($offset !== false) {
-							$temp = '<span style="font-weight:bold">' . mb_substr($line, $i+1, $offset) . '</span>';
-							$i += $offset;
+							$temp = '<span style="font-weight:bold">' . htmlspecialchars(mb_substr($line, $i+1, $offset)) . '</span>';
+							$i += $offset+1;
 						}
 						break;
 					case '_':
 						$offset = mb_strpos(mb_substr($line, $i+1), '_');
 						if ($offset !== false) {
-							$temp = '<span style="font-style:italic">' . mb_substr($line, $i+1, $offset) . '</span>';
-							$i += $offset;
+							$temp = '<span style="font-style:italic">' . htmlspecialchars(mb_substr($line, $i+1, $offset)) . '</span>';
+							$i += $offset+1;
 						}
 						break;
 					case '+':
 						$offset = mb_strpos(mb_substr($line, $i+1), '+');
 						if ($offset !== false) {
-							$temp = '<span style="text-decoration:underline">' . mb_substr($line, $i+1, $offset) . '</span>';
-							$i += $offset;
+							$temp = '<span style="text-decoration:underline">' . htmlspecialchars(mb_substr($line, $i+1, $offset)) . '</span>';
+							$i += $offset+1;
 						}
 						break;
 					case '-':
 						$offset = mb_strpos(mb_substr($line, $i+1), '-');
 						if ($offset !== false) {
-							$temp = '<span style="text-decoration:line-through">' . mb_substr($line, $i+1, $offset) . '</span>';
-							$i += $offset;
+							$temp = '<span style="text-decoration:line-through">' . htmlspecialchars(mb_substr($line, $i+1, $offset)) . '</span>';
+							$i += $offset+1;
 						}
 						break;
 					case '??':
 						$offset = mb_strpos(mb_substr($line, $i+2), '??');
 						if ($offset !== false) {
-							$temp = '<span style="font-style:italic">' . mb_substr($line, $i+2, $offset) . '</span>';
-							$i += $offset+1;
+							$temp = '<span style="font-style:italic">' . htmlspecialchars(mb_substr($line, $i+2, $offset)) . '</span>';
+							$i += $offset+2;
 						}
 						break;
 					case '@':
 						$offset = mb_strpos(mb_substr($line, $i+1), '@');
 						if ($offset !== false) {
-							$temp = '<span style="font-family:monospace">' . mb_substr($line, $i+1, $offset) . '</span>';
-							$i += $offset;
+							$temp = '<span style="font-family:monospace">' . htmlspecialchars(mb_substr($line, $i+1, $offset)) . '</span>';
+							$i += $offset+1;
 						}
 						break;
 					case '!':
 						$offset = mb_strpos(mb_substr($line, $i+1), '!');
 						if ($offset !== false && filter_var(mb_substr($line, $i+1, $offset),FILTER_VALIDATE_URL)) {
-							$temp = '<img src="' . mb_substr($line, $i+1, $offset) . '"/>';
-							$i += $offset;
+							$temp = '<img src="' . htmlspecialchars(mb_substr($line, $i+1, $offset)) . '"/>';
+							$i += $offset+1;
 						}
 						break;
 					case '"':
 						if (preg_match("/[^ ](\"(.+?)\":(.+?))[ $]/u", mb_substr($line,$i==0 ? 0 : $i-1), $matches) && filter_var($matches[3],FILTER_VALIDATE_URL)) {
-							$temp = '<a href="' . $matches[3] . '">' . $matches[2] . '</a>';
-							$i += mb_strlen($matches[1])-1;
+							$temp = '<a href="' . $matches[3] . '">' . htmlspecialchars($matches[2]) . '</a>';
+							$i += mb_strlen($matches[1]);
 						}
 						break;
 					case "|":
@@ -238,6 +288,14 @@ class TextileHelper extends Helper {
 		}
 		$res .= implode('',array_fill(0, $nestlevel ? $nestlevel : 1, '</' . $blocktype . '>')) . "\n";
 
+		$res = preg_replace_callback("/<code class=\"(.+)\">(.+)<\/code>/smu", "TextileHelper::convertCode", $res);
+
 		return $res;
+	}
+
+	private static function convertCode($matches) {
+		echo 'test';
+		$geshi = new GeSHi($matches[2],$matches[1]);
+		return $geshi->parse_code();
 	}
 }
