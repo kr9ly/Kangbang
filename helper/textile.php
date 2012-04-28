@@ -294,7 +294,6 @@ class TextileHelper extends Helper {
 	}
 
 	private static function convertCode($matches) {
-		echo 'test';
 		$geshi = new GeSHi($matches[2],$matches[1]);
 		return $geshi->parse_code();
 	}
