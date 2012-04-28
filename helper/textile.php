@@ -19,8 +19,7 @@ class TextileHelper extends Helper {
 					break;
 				case strpos($line, 'code.') === 0:
 					$res .= '</code>' . "\n";
-					$blocktype = false;
-					$converting = true;
+					list($blocktype, $converting, $nestlevel) = array(false, true, 0);
 					continue 2;
 				case preg_match("/^code:([a-z_]+)\./u",$line,$matches):
 					$newBlock = 'code';
@@ -297,6 +296,11 @@ class TextileHelper extends Helper {
 
 	private static function convertCode($matches) {
 		$geshi = new GeSHi($matches[2],$matches[1]);
-		return $geshi->parse_code();
+		if (!$geshi->error()) {
+			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
+			return $geshi->parse_code();
+		} else {
+			return htmlspecialchars($matches[2]);
+		}
 	}
 }
