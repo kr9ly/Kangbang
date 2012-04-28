@@ -19,8 +19,8 @@ class TextileHelper extends Helper {
 				case preg_match("/^p([>=])?([\(\)]+)?\./u",$line,$matches):
 					$newBlock = 'p';
 					break;
-				case preg_match("/^h[1-6]\./u",$line,$matches):
-					$newBlock = 'h';
+				case preg_match("/^h([1-6])\./u",$line,$matches):
+					$newBlock = 'h' . $matches[1];
 					break;
 				case preg_match("/^\|.+\|$/u", $line):
 					$newBlock = 'table';
@@ -90,8 +90,12 @@ class TextileHelper extends Helper {
 					$line = substr($line,strlen($matches[0]));
 					$res .= $block;
 					break;
-				case 'h':
-					$blocktype = 'h' . $matches[1];
+				case 'h1':
+				case 'h2':
+				case 'h3':
+				case 'h4':
+				case 'h5':
+				case 'h6':
 					$line = substr($line,3);
 					$res .= '<h' . $matches[1] . '>';
 					break;
@@ -110,8 +114,8 @@ class TextileHelper extends Helper {
 							$nestlevel++;
 							$res .= "\n<" . $blocktype . ">\n<li>";
 						} else if (strlen($matches[1]) < $nestlevel) {
-							$nestlevel--;
-							$res .= "</li>\n</li>\n</" . $blocktype . ">\n<li>";
+							$res .= "</li>\n</li>\n" . implode('',array_fill(0, $nestlevel - strlen($matches[1]), "</" . $blocktype . ">")) . "\n<li>";
+							$nestlevel = strlen($matches[1]);
 						} else {
 							$res .= "</li>\n<li>";
 						}
