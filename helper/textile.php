@@ -171,7 +171,7 @@ class TextileHelper extends Helper {
 					case '@':
 						$offset = mb_strpos(mb_substr($line, $i+1), '@');
 						if ($offset !== false) {
-							$temp = '<span style="font-family: monospace">' . mb_substr($line, $i+1, $offset) . '</span>';
+							$temp = '<span style="font-family:monospace">' . mb_substr($line, $i+1, $offset) . '</span>';
 							$i += $offset;
 						}
 						break;
