@@ -58,6 +58,18 @@ class TextileHelper extends Helper {
 				$blocktype = 'h' . $matches[1];
 				$line = substr($line,3);
 				$res .= '<h' . $matches[1] . '>';
+			} else if (preg_match("/^\|.+\|$/u", $line)) {
+				if ($blocktype == "table") {
+					$res .= '\n<tr>';
+				} else {
+					if ($blocktype) {
+						$res .= "\n</" . $blocktype . ">\n";
+						$blocktype = false;
+						$converting = true;
+					}
+					$blocktype = 'table';
+					$res .= '<table><tr>';
+				}
 			} else if ($line == "") {
 				$res .= "\n";
 				if ($blocktype) {
@@ -130,6 +142,41 @@ class TextileHelper extends Helper {
 						if (preg_match("/[^ ](\"(.+?)\":(.+?))[ $]/u", mb_substr($line,$i==0 ? 0 : $i-1), $matches) && filter_var($matches[3],FILTER_VALIDATE_URL)) {
 							$temp = '<a href="' . $matches[3] . '">' . $matches[2] . '</a>';
 							$i += mb_strlen($matches[1])-1;
+						}
+						break;
+					case "|":
+						if ($blocktype == "table") {
+							if ($i > 0) {
+								$res .= '</' . $tTag . '>';
+							}
+							$tTag = 'td';
+							$tStyle = '';
+							$tOptions = '';
+							if (preg_match("/^([0-9_\\\/\^~<>]+)\./u", mb_substr($line, $i+1), $matches)) {
+								if (strpos($matches[1], '_') !== false) {
+									$tTag = 'th';
+								}
+								if (preg_match("/\\([0-9])/u", $matches[1], $number)) {
+									$tOptions .= ' colspan="' . $number[1] . '"';
+								}
+								if (preg_match("/\/([0-9])/u", $matches[1], $number)) {
+									$tOptions .= ' rowspan="' . $number[1] . '"';
+								}
+								if (strpos('<') !== false) {
+									$tStyle .= 'text-align:left;';
+								} else if (strpos('>') !== false) {
+									$tStyle .= 'text-align:right;';
+								} else if (strpos('=') !== false) {
+									$tStyle .= 'text-align:center;';
+								}
+								if (strpos('^') !== false) {
+									$tStyle .= 'vertical-align:top;';
+								} else if (strpos('~') !== false) {
+									$tStyle .= 'vertical-align:bottom;';
+								}
+								$i += mb_strlen($matches[1]);
+							}
+							$temp = '<' . $tTag . $tOptions . ($tStyle ? ' style="' . $tStyle . "'" : "") . '>';
 						}
 						break;
 				}
