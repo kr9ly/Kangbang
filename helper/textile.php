@@ -6,11 +6,16 @@ class TextileHelper extends Helper {
 
 		$lines = explode("\n",$textile);
 		list($blocktype, $converting, $nestlevel) = array(false, true, 0);
+
+		$toc = array();
 		foreach ($lines as $line) {
 			$line = rtrim($line);
 			$newBlock = false;
 			$cont = false;
 			switch(true) {
+				case strpos($line, '{{toc}}') === 0:
+					$newBlock = 'toc';
+					break;
 				case strpos($line, 'bq.') === 0:
 					$newBlock = 'blockquote';
 					break;
@@ -71,6 +76,7 @@ class TextileHelper extends Helper {
 			} else {
 				switch ($blocktype) {
 					case 'code':
+					case 'toc':
 						$res .= "\n";
 						break;
 					case 'ol':
@@ -86,6 +92,9 @@ class TextileHelper extends Helper {
 				}
 			}
 			switch ($newBlock) {
+				case 'toc':
+					$res .= "{{toc}}\n";
+					continue 2;
 				case 'blockquote':
 					if ($blocktype == 'blockquote') {
 						break;
@@ -141,6 +150,11 @@ class TextileHelper extends Helper {
 				case 'h6':
 					$line = substr($line,3);
 					$res .= '<h' . $matches[1] . '>';
+
+					$anchor = md5($_SERVER['REQUEST_URI'] . $line);
+					$res .= '<a name="' . $anchor . '"></a>';
+
+					$toc[] = array('depth' => $matches[1], 'anchor' => $anchor, 'name' => $line);
 					break;
 				case 'table':
 					if ($blocktype == "table") {
@@ -154,8 +168,8 @@ class TextileHelper extends Helper {
 				case 'ol':
 					if ($blocktype == $newBlock) {
 						if (strlen($matches[1]) > $nestlevel) {
-							$nestlevel++;
-							$res .= "\n<" . $blocktype . ">\n<li>";
+							$res .= "\n" . implode('',array_fill(0, strlen($matches[1]) - $nestlevel, "<" . $blocktype . ">")) . "\n<li>";
+							$nestlevel = strlen($matches[1]);
 						} else if (strlen($matches[1]) < $nestlevel) {
 							$res .= "</li>\n</li>\n" . implode('',array_fill(0, $nestlevel - strlen($matches[1]), "</" . $blocktype . ">")) . "\n<li>";
 							$nestlevel = strlen($matches[1]);
@@ -290,6 +304,24 @@ class TextileHelper extends Helper {
 		$res .= implode('',array_fill(0, $nestlevel ? $nestlevel : 1, '</' . $blocktype . '>')) . "\n";
 
 		$res = preg_replace_callback("/<code class=\"(.+)\">(.+)<\/code>/smu", "TextileHelper::convertCode", $res);
+
+		if (preg_match("/^{{toc}}/u", $res)) {
+			$tocHtml = '<ul class="toc">' . "\n";
+			$depth = 1;
+			foreach ($toc as $val) {
+				if ($val['depth'] > $depth) {
+					$tocHtml .= implode('',array_fill(0, $val['depth'] - $depth, '<ul>')) . "\n";
+					$depth = $val['depth'];
+				} else if ($val['depth'] < $depth) {
+					$tocHtml .= implode('',array_fill(0, $depth - $val['depth'], '</ul>')) . "\n";
+					$depth = $val['depth'];
+				}
+				$tocHtml .= '<li>' . '<a href="#' . $val['anchor'] . '">' . $val['name'] . '</a>' . '</li>';
+			}
+			$tocHtml .= implode('',array_fill(0, $depth - 1, '</ul>')) . "\n";
+			$tocHtml .= '</ul>';
+			$res = preg_replace("/^{{toc}}/u", $tocHtml, $res);
+		}
 
 		return $res;
 	}
