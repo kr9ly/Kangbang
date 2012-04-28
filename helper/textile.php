@@ -305,7 +305,7 @@ class TextileHelper extends Helper {
 
 		$res = preg_replace_callback("/<code class=\"(.+)\">(.+)<\/code>/smu", "TextileHelper::convertCode", $res);
 
-		if (preg_match("/^{{toc}}/u", $res)) {
+		if (preg_match("/{{toc}}\n/u", $res)) {
 			$tocHtml = '<ul class="toc">' . "\n";
 			$depth = 1;
 			foreach ($toc as $val) {
@@ -320,7 +320,7 @@ class TextileHelper extends Helper {
 			}
 			$tocHtml .= implode('',array_fill(0, $depth - 1, '</ul>')) . "\n";
 			$tocHtml .= '</ul>';
-			$res = preg_replace("/^{{toc}}/u", $tocHtml, $res);
+			$res = preg_replace("/{{toc}}\n/u", $tocHtml, $res);
 		}
 
 		return $res;
