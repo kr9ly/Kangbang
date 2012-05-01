@@ -1,3 +1,3 @@
-<?php Parts::display('header') ?>
+<frame:main>
 404 Not Found.
-<?php Parts::display('footer') ?>
+</frame:main>

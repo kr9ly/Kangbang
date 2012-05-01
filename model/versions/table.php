@@ -17,4 +17,8 @@ class TableVersionsDao extends Dao {
 	public function getVersionQuery($columns) {
 		return md5(serialize($columns));
 	}
+
+	public function getVersionQueryForValidation($columns) {
+		return md5(serialize($columns));
+	}
 }

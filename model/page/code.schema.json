@@ -1,0 +1,14 @@
+{
+	"columns" : {
+		"page_id" : {"type":"int", "size":11, "required":true}
+		,"page_path" : {"type":"varchar", "size":255, "required":true, "unique":true}
+		,"version" : {"type":"int", "size":11, "required":true}
+		,"page_type" : {"type":"varchar", "size":255, "required":true}
+		,"html" : {"type":"text", "required":true}
+		,"insert_date" : {"type":"insertDate"}
+		,"update_date" : {"type":"updateDate"}
+	}
+	,"keyName" : ["page_id","page_path","version"]
+	,"engine" : "InnoDB"
+	,"characterSet" : "utf8"
+}

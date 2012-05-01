@@ -1,3 +1,4 @@
 <frame:main>
-${_textile}
+${reason}<br />
+${trace}
 </frame:main>

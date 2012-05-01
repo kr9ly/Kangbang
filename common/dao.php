@@ -379,6 +379,9 @@ class Dao extends Base {
 				continue;
 			}
 			if (array_key_exists($key,$params)) {
+				if ($params[$key] && method_exists($this, 'get' . TextHelper::toCamelCase($key) . 'QueryForValidation')) {
+					$params[$key] = call_user_func(array($this, 'get' . TextHelper::toCamelCase($key) . 'QueryForValidation'),$params[$key]);
+				}
 				switch ($val['type']) {
 					case 'int':
 						if (!preg_match('/^-?[0-9]+$/',$params[$key])) {
